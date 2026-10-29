@@ -85,3 +85,21 @@ test('Vercel API rejects unsupported methods', async () => {
   assert.equal(res.statusCode, 405);
   assert.equal(res.headers.allow, 'GET');
 });
+
+
+const fs = require('node:fs');
+const path = require('node:path');
+
+test('Vercel build output contains the home page and every referenced local asset', () => {
+  const root = path.resolve(__dirname, '..');
+  for (const filename of ['index.html', 'styles.css', 'app.js', 'catalog.js', 'favicon.svg']) {
+    const output = path.join(root, 'public', filename);
+    assert.equal(fs.existsSync(output), true, 'missing public/' + filename);
+    assert.equal(fs.statSync(output).isFile(), true, 'not a file: public/' + filename);
+  }
+  assert.equal(
+    fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8'),
+    fs.readFileSync(path.join(root, 'index.html'), 'utf8'),
+    'public homepage must be built from the repository source'
+  );
+});
