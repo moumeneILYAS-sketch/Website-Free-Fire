@@ -1,0 +1,11 @@
+{
+  "name": "bluedrop-free-fire-store-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Arabic RTL storefront demo with a small Node.js API; no real payment or game-item delivery.",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check app.js"
+  },
+  "engines": { "node": ">=18" }
+}
