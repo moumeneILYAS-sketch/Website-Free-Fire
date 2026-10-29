@@ -4,43 +4,230 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071326">
-  <meta name="description" content="BlueDrop — واجهة متجر تجريبية عربية لعناصر Free Fire والجواهر.">
-  <title>BlueDrop — متجر Free Fire التجريبي</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
+  <meta name="description" content="BlueDrop — تجربة متجر ألعاب رقمية بتصميم أزرق فاخر، وفئات واضحة وسلة تجريبية.">
+  <meta property="og:title" content="BlueDrop — ارتقِ بمستواك">
+  <meta property="og:description" content="اكتشف تجربة متجر BlueDrop التجريبية لعناصر الألعاب الرقمية.">
+  <meta property="og:type" content="website">
+  <title>BlueDrop — متجر الألعاب الرقمية</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/catalog.js" defer></script>
+  <script src="/app.js" defer></script>
 </head>
 <body>
-  <div class="announcement"><span class="dot"></span> نسخة تجريبية — الأسعار والطلبات غير حقيقية، والشحن والدفع غير مفعّلين بعد</div>
-  <header class="site-header"><div class="container nav-wrap">
-    <a class="brand" href="#home" aria-label="BlueDrop الصفحة الرئيسية"><span class="brand-mark">B<span>◆</span></span><span class="brand-copy"><strong>BLUE<span>DROP</span></strong><small>FREE FIRE STORE</small></span></a>
-    <nav class="main-nav" aria-label="التنقل الرئيسي"><a class="active" href="#home">الرئيسية</a><a href="#shop">المتجر</a><a href="#how">كيف يعمل؟</a><a href="#about">حول المتجر</a></nav>
-    <button class="cart-trigger" id="openCart" type="button" aria-label="فتح سلة المشتريات">🛒 <span>السلة</span><b id="cartCount">0</b></button>
-  </div></header>
-  <main>
-    <section class="hero" id="home"><div class="hero-grid"></div><div class="container hero-layout">
-      <div class="hero-copy"><div class="eyebrow">✦ &nbsp; مكانك لعالم فري فاير</div><h1>ارتقِ بمستواك.<br><span>واختر أسلوبك.</span></h1><p>اكتشف باقات الجواهر والعناصر المميزة والأكواد في تجربة متجر عربية، سريعة وسهلة الاستخدام.</p><div class="hero-actions"><a class="button primary" href="#shop">اكتشف المتجر <span>←</span></a><a class="button secondary" href="#how">كيف يعمل؟</a></div><div class="trust-row"><span>✓ تصميم واضح</span><i></i><span>✓ تجربة متجاوبة</span><i></i><span>✓ لا نطلب كلمة مرورك</span></div></div>
-      <div class="hero-art" aria-label="رسم توضيحي لجوهرة زرقاء"><div class="ring ring-a"></div><div class="ring ring-b"></div><div class="diamond"><div class="diamond-cap"></div><div class="diamond-left"></div><div class="diamond-center"></div><div class="diamond-right"></div></div><span class="float-chip chip-a">✦ BLUE DROP</span><span class="float-chip chip-b">◆ LEVEL UP</span><span class="spark spark-a">✧</span><span class="spark spark-b">✦</span></div>
-    </div><div class="container hero-stats"><div><span>💎</span><section><b>الجواهر</b><small>باقات متعددة</small></section></div><div><span>🎟️</span><section><b>الأكواد</b><small>عروض تجريبية</small></section></div><div><span>🛡️</span><section><b>خصوصيتك أولًا</b><small>لا تشارك كلمة مرورك</small></section></div><div class="status"><span class="dot"></span> متجر مستقل وغير رسمي</div></div></section>
+  <a class="skip-link" href="#main">تجاوز إلى المحتوى</a>
+  <div class="announcement-bar">
+    <span class="announcement-pulse" aria-hidden="true"></span>
+    <span>BlueDrop في وضع المعاينة — لا توجد عمليات دفع أو شحن حقيقية</span>
+    <a href="#how-it-works">اعرف المزيد <span aria-hidden="true">←</span></a>
+  </div>
 
-    <section class="shop section-pad" id="shop"><div class="container">
-      <div class="section-heading"><div><div class="eyebrow">✦ &nbsp; اختر ما يناسبك</div><h2>تصفّح <span>المتجر</span></h2><p>استعرض الفئات وأضف العناصر إلى سلتك لتجربة الطلب التجريبية.</p></div><label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="ابحث عن عنصر..." aria-label="البحث عن عنصر"><kbd>Ctrl K</kbd></label></div>
-      <div class="toolbar"><div class="filters" role="group" aria-label="تصفية المنتجات"><button class="filter active" data-filter="all" type="button">الكل</button><button class="filter" data-filter="diamonds" type="button">💎 الجواهر</button><button class="filter" data-filter="codes" type="button">🎟️ الأكواد</button><button class="filter" data-filter="skins" type="button">🧥 السكنات</button><button class="filter" data-filter="emotes" type="button">🕺 الرقصات</button></div><label class="sort">الترتيب <select id="sortSelect"><option value="featured">المميزة أولًا</option><option value="low">السعر: الأقل</option><option value="high">السعر: الأعلى</option></select></label></div>
-      <div class="product-grid" id="productGrid" aria-live="polite"></div><div class="empty" id="emptyState" hidden><span>⌕</span><h3>لم نعثر على نتائج</h3><p>جرّب كلمة بحث أو فئة أخرى.</p><button class="button secondary" id="clearFilters" type="button">عرض كل العناصر</button></div>
-      <div class="notice"><span>ⓘ</span> الأسعار والعناصر المعروضة لأغراض التصميم والاختبار فقط، وليست عروض بيع فعلية.</div>
-    </div></section>
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="BlueDrop — الصفحة الرئيسية">
+        <span class="brand-symbol" aria-hidden="true"><span class="symbol-core">B</span><span class="symbol-spark">✦</span></span>
+        <span class="brand-wordmark"><strong>BLUE<span>DROP</span></strong><small>PLAY YOUR WAY</small></span>
+      </a>
 
-    <section class="how section-pad" id="how"><div class="container"><div class="center-heading"><div class="eyebrow">✦ &nbsp; خطوات بسيطة</div><h2>تجربة سهلة من <span>البداية للنهاية</span></h2><p>تدفق تجريبي يوضّح شكل المتجر قبل ربطه بخدمات حقيقية.</p></div>
-      <div class="steps"><article><small>01</small><span>🧭</span><h3>اختر العنصر</h3><p>تصفّح الفئات وحدد الباقة أو العنصر الذي يعجبك.</p></article><article><small>02</small><span>🛒</span><h3>راجع السلة</h3><p>عدّل الكميات وتأكد من العناصر قبل المتابعة.</p></article><article><small>03</small><span>🪪</span><h3>معاينة الطلب</h3><p>أدخل معرّف اللاعب في النموذج التجريبي فقط، دون كلمة مرور.</p></article></div>
-      <div class="security"><span class="security-icon">🔐</span><div><h3>حافظ على أمان حسابك</h3><p>لا تشارك كلمة مرور Free Fire أو رموز التحقق مع أي متجر. هذا الموقع نموذج واجهة فقط ولا ينفّذ الشحن أو الدفع.</p></div></div>
-    </div></section>
-    <section class="about" id="about"><div class="container about-row"><div class="about-mark">B<span>◆</span></div><div><div class="eyebrow">عن BlueDrop</div><h2>تصميم مستقل لعشاق اللعبة.</h2><p>BlueDrop مشروع واجهة تجريبية غير رسمي، هدفه عرض تجربة متجر رقمية باللغة العربية. لا يرتبط هذا الموقع بشركة Garena أو Free Fire، ولا يوفّر عناصر أو أكوادًا حقيقية في الوقت الحالي.</p></div><a class="button secondary" href="#shop">العودة للمتجر ↑</a></div></section>
+      <nav class="primary-nav" id="primaryNav" aria-label="التنقل الرئيسي">
+        <a class="nav-link is-active" href="#top">الرئيسية</a>
+        <a class="nav-link" href="#shop">المتجر</a>
+        <a class="nav-link" href="#benefits">لماذا BlueDrop؟</a>
+        <a class="nav-link" href="#faq">الأسئلة الشائعة</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-action search-toggle" id="focusSearch" type="button" aria-label="البحث عن منتج" title="البحث (Ctrl+K)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.2 4.2"></path></svg>
+        </button>
+        <button class="cart-trigger" id="openCart" type="button" aria-label="فتح سلة المشتريات">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.5L20.5 8H6"></path><circle cx="9.5" cy="19.2" r="1.2"></circle><circle cx="17.2" cy="19.2" r="1.2"></circle></svg>
+          <span>السلة</span><b class="cart-count" id="cartCount">0</b>
+        </button>
+        <button class="mobile-menu-trigger icon-action" id="mobileMenuToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="فتح قائمة التنقل">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero-section" aria-labelledby="heroTitle">
+      <div class="hero-backdrop" aria-hidden="true"><div class="hero-grid"></div><div class="hero-aurora aurora-one"></div><div class="hero-aurora aurora-two"></div></div>
+      <div class="container hero-layout">
+        <div class="hero-content reveal">
+          <div class="hero-kicker"><span class="kicker-star">✦</span><span>وجهتك لعالم الألعاب الرقمية</span><span class="kicker-line"></span></div>
+          <h1 id="heroTitle">العب بطريقتك.<br><span>ارتقِ بأسلوبك.</span></h1>
+          <p class="hero-description">تجربة متجر مصممة للاعبين — تصفّح، اكتشف، واجمع كل اختياراتك في مكان واحد.</p>
+          <div class="hero-cta-row">
+            <a class="button button-primary button-large" href="#shop">اكتشف المتجر <span class="button-arrow" aria-hidden="true">←</span></a>
+            <a class="button button-ghost button-large" href="#how-it-works"><span class="play-outline" aria-hidden="true">▶</span> كيف يعمل؟</a>
+          </div>
+          <div class="hero-assurances" aria-label="مبادئ المتجر">
+            <span><i aria-hidden="true">✓</i> واجهة عربية سهلة</span>
+            <span><i aria-hidden="true">✓</i> تجربة واضحة</span>
+            <span><i aria-hidden="true">✓</i> خصوصيتك أولًا</span>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal reveal-delay-2" aria-label="رسم توضيحي لجوهرة زرقاء">
+          <div class="visual-halo halo-a" aria-hidden="true"></div><div class="visual-halo halo-b" aria-hidden="true"></div>
+          <div class="orbital orbital-a" aria-hidden="true"></div><div class="orbital orbital-b" aria-hidden="true"></div>
+          <div class="gem-stage" aria-hidden="true">
+            <div class="gem-shadow"></div>
+            <div class="gem">
+              <div class="gem-crown"></div><div class="gem-face gem-face-left"></div><div class="gem-face gem-face-mid"></div><div class="gem-face gem-face-right"></div><div class="gem-glint"></div>
+            </div>
+          </div>
+          <div class="floating-label floating-label-top"><span class="floating-label-icon">✦</span><span><small>BLUE DROP</small><strong>LEVEL UP</strong></span></div>
+          <div class="floating-label floating-label-bottom"><span class="mini-gem" aria-hidden="true">◆</span><span><small>YOUR NEXT PICK</small><strong>ابدأ من هنا</strong></span></div>
+          <span class="particle particle-one" aria-hidden="true">✧</span><span class="particle particle-two" aria-hidden="true">✦</span><span class="particle particle-three" aria-hidden="true">·</span>
+        </div>
+      </div>
+
+      <div class="container trust-strip reveal">
+        <div class="trust-item"><span class="trust-icon">◈</span><span><strong>فئات واضحة</strong><small>اعثر على ما تبحث عنه</small></span></div>
+        <div class="trust-item"><span class="trust-icon">⌕</span><span><strong>بحث سريع</strong><small>فلترة وترتيب سهلان</small></span></div>
+        <div class="trust-item"><span class="trust-icon">▣</span><span><strong>سلة منظمة</strong><small>راجع اختياراتك في مكان واحد</small></span></div>
+        <div class="trust-item trust-demo"><span class="status-light" aria-hidden="true"></span><span><strong>وضع تجريبي</strong><small>لا يتم تحصيل أموال</small></span></div>
+      </div>
+    </section>
+
+    <section class="section category-section" aria-labelledby="categoryTitle">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div><span class="section-eyebrow">تصفّح بطريقتك</span><h2 id="categoryTitle">ماذا تبحث عنه <span>اليوم؟</span></h2><p>ابدأ من فئتك المفضلة وانتقل مباشرة إلى المنتجات.</p></div>
+          <a class="text-link" href="#shop">كل المنتجات <span aria-hidden="true">←</span></a>
+        </div>
+        <div class="category-grid">
+          <button class="category-card category-diamonds reveal" type="button" data-category-jump="diamonds">
+            <span class="category-art category-art-gem" aria-hidden="true"><span>◆</span></span><span class="category-copy"><small>01 / CURRENCY</small><strong>الجواهر</strong><span>تصفّح الباقات <b aria-hidden="true">←</b></span></span><span class="category-glow" aria-hidden="true"></span>
+          </button>
+          <button class="category-card category-codes reveal reveal-delay-1" type="button" data-category-jump="codes">
+            <span class="category-art category-art-ticket" aria-hidden="true"><span>✳</span></span><span class="category-copy"><small>02 / REWARDS</small><strong>الأكواد</strong><span>شاهد الفئة <b aria-hidden="true">←</b></span></span><span class="category-glow" aria-hidden="true"></span>
+          </button>
+          <button class="category-card category-skins reveal reveal-delay-2" type="button" data-category-jump="skins">
+            <span class="category-art category-art-shield" aria-hidden="true"><span>⬡</span></span><span class="category-copy"><small>03 / COLLECTION</small><strong>السكنات</strong><span>اكتشف العناصر <b aria-hidden="true">←</b></span></span><span class="category-glow" aria-hidden="true"></span>
+          </button>
+          <button class="category-card category-emotes reveal reveal-delay-3" type="button" data-category-jump="emotes">
+            <span class="category-art category-art-motion" aria-hidden="true"><span>✦</span></span><span class="category-copy"><small>04 / EMOTES</small><strong>الرقصات</strong><span>اكتشف الفئة <b aria-hidden="true">←</b></span></span><span class="category-glow" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section catalog-section" id="shop" aria-labelledby="shopTitle">
+      <div class="container">
+        <div class="section-heading catalog-heading reveal">
+          <div><span class="section-eyebrow">اختيارات BlueDrop</span><h2 id="shopTitle">اكتشف <span>المتجر</span></h2><p>كل الأسعار والعناصر هنا أمثلة توضيحية حتى يتم إعداد خدمات حقيقية.</p></div>
+          <label class="catalog-search" for="searchInput"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.2 4.2"></path></svg><input id="searchInput" type="search" placeholder="ابحث عن منتج..." autocomplete="off"><kbd>Ctrl K</kbd></label>
+        </div>
+        <div class="catalog-toolbar reveal">
+          <div class="filter-list" role="group" aria-label="تصفية حسب الفئة">
+            <button class="filter-pill is-active" data-filter="all" type="button" aria-pressed="true">الكل <span id="allCount">08</span></button>
+            <button class="filter-pill" data-filter="diamonds" type="button" aria-pressed="false">الجواهر</button>
+            <button class="filter-pill" data-filter="codes" type="button" aria-pressed="false">الأكواد</button>
+            <button class="filter-pill" data-filter="skins" type="button" aria-pressed="false">السكنات</button>
+            <button class="filter-pill" data-filter="emotes" type="button" aria-pressed="false">الرقصات</button>
+          </div>
+          <label class="sort-control"><span>ترتيب حسب</span><select id="sortSelect"><option value="featured">الاختيارات المميزة</option><option value="low">السعر: من الأقل</option><option value="high">السعر: من الأعلى</option><option value="name">الاسم: أبجديًا</option></select></label>
+        </div>
+        <div class="active-filters" id="activeFilters" hidden><span id="resultCount">8 منتجات</span><button id="clearFilters" type="button">مسح الفلاتر ×</button></div>
+        <div class="product-grid" id="productGrid" aria-live="polite" aria-busy="false"></div>
+        <div class="empty-state" id="emptyState" hidden><span class="empty-art" aria-hidden="true">⌕</span><h3>لم نجد ما تبحث عنه</h3><p>جرّب كلمة بحث مختلفة أو اعرض كل المنتجات.</p><button class="button button-ghost" id="resetCatalog" type="button">عرض كل المنتجات</button></div>
+        <div class="catalog-footnote"><span aria-hidden="true">ⓘ</span><p>أسعار المنتجات وأوصافها تجريبية، ولا تمثل مخزونًا فعليًا أو عروض بيع حقيقية.</p></div>
+      </div>
+    </section>
+
+    <section class="feature-banner section" aria-labelledby="featureTitle">
+      <div class="feature-banner-glow" aria-hidden="true"></div>
+      <div class="container feature-banner-inner reveal">
+        <div class="feature-copy"><span class="feature-eyebrow"><span aria-hidden="true">✦</span> مصمم للاعبين</span><h2 id="featureTitle">تجربة أوضح.<br><span>اختيارات أذكى.</span></h2><p>تصميم يساعدك على اكتشاف الفئات ومقارنة الاختيارات ومراجعة سلتك بدون زحمة أو خطوات مبهمة.</p><a class="button button-primary" href="#how-it-works">اكتشف طريقة العمل <span aria-hidden="true">←</span></a></div>
+        <div class="feature-orbit" aria-hidden="true"><div class="feature-orbit-ring ring-1"></div><div class="feature-orbit-ring ring-2"></div><div class="feature-orbit-ring ring-3"></div><div class="feature-orbit-core"><span>BD</span><small>PLAY YOUR WAY</small></div><span class="feature-node node-1">✦</span><span class="feature-node node-2">◈</span><span class="feature-node node-3">✧</span></div>
+      </div>
+    </section>
+
+    <section class="section benefits-section" id="benefits" aria-labelledby="benefitsTitle">
+      <div class="container">
+        <div class="center-heading reveal"><span class="section-eyebrow">تجربة مبنية بعناية</span><h2 id="benefitsTitle">التفاصيل الصغيرة <span>تصنع الفرق</span></h2><p>أولويات التصميم هي الوضوح والخصوصية وسهولة الاستخدام.</p></div>
+        <div class="benefit-grid">
+          <article class="benefit-card reveal"><span class="benefit-icon icon-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m8.5 12 2.2 2.2 4.8-5"></path></svg></span><h3>وضوح من البداية</h3><p>تصنيفات مفهومة وأسعار معروضة بوضوح وحالات طلب لا تترك مجالًا للتخمين.</p></article>
+          <article class="benefit-card reveal reveal-delay-1"><span class="benefit-icon icon-cyan"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"></path></svg></span><h3>الخصوصية أولًا</h3><p>لا يطلب المتجر كلمة مرور اللعبة أو رموز التحقق. بيانات التجربة لا تستخدم لتسليم منتجات حقيقية.</p></article>
+          <article class="benefit-card reveal reveal-delay-2"><span class="benefit-icon icon-violet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"></path><circle cx="18" cy="15" r="3"></circle><path d="m20.2 17.2 1.3 1.3"></path></svg></span><h3>تحكم سهل</h3><p>بحث وفلاتر وترتيب وسلة قابلة للتعديل، مع دعم واضح للوحة المفاتيح والشاشات الصغيرة.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section how-section" id="how-it-works" aria-labelledby="howTitle">
+      <div class="container">
+        <div class="section-heading reveal"><div><span class="section-eyebrow">بلا تعقيد</span><h2 id="howTitle">كيف تعمل <span>التجربة؟</span></h2><p>ثلاث خطوات بسيطة لتجربة واجهة المتجر.</p></div></div>
+        <div class="steps-grid">
+          <article class="step-card reveal"><span class="step-index">01</span><div class="step-icon">⌕</div><h3>اكتشف</h3><p>استخدم الفئات والبحث للوصول إلى المنتج المناسب.</p><span class="step-line" aria-hidden="true"></span></article>
+          <article class="step-card reveal reveal-delay-1"><span class="step-index">02</span><div class="step-icon">▣</div><h3>راجع</h3><p>أضف العناصر إلى السلة وعدّل الكميات وشاهد المجموع التجريبي.</p><span class="step-line" aria-hidden="true"></span></article>
+          <article class="step-card reveal reveal-delay-2"><span class="step-index">03</span><div class="step-icon">✓</div><h3>اختبر</h3><p>جرّب نموذج الطلب لمعرفة شكل التجربة قبل تفعيل أي خدمة فعلية.</p><span class="step-line" aria-hidden="true"></span></article>
+        </div>
+        <div class="safety-note reveal"><span class="safety-icon" aria-hidden="true">🔐</span><div><strong>تذكير أمني مهم</strong><p>هذا مشروع تجريبي مستقل. لم يتم ربطه بالدفع أو شحن Free Fire أو تسليم الأكواد. لا تشارك كلمة مرورك أو رمز التحقق مع أي جهة.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section faq-section" id="faq" aria-labelledby="faqTitle">
+      <div class="container faq-layout">
+        <div class="faq-intro reveal"><span class="section-eyebrow">هل لديك سؤال؟</span><h2 id="faqTitle">إجابات <span>بوضوح.</span></h2><p>بعض التفاصيل المهمة حول النسخة الحالية من BlueDrop.</p><a class="text-link" href="#site-info">معلومات المشروع <span aria-hidden="true">←</span></a></div>
+        <div class="faq-list reveal reveal-delay-1">
+          <details><summary>هل الشحن والدفع يعملان الآن؟<span aria-hidden="true"></span></summary><p>لا. الموقع حاليًا واجهة تجريبية، والأسعار والعناصر أمثلة تصميمية. لا يتم تحصيل أي مبلغ ولا يتم شحن حساب لعبة.</p></details>
+          <details><summary>هل أحتاج إلى كلمة مرور Free Fire؟<span aria-hidden="true"></span></summary><p>لا. لا تدخل كلمة المرور أو رموز التحقق في أي نموذج. نموذج الاختبار يستخدم معرّفًا رقميًا فقط ولا ينفّذ الشحن.</p></details>
+          <details><summary>هل الأكواد والسكنات المعروضة حقيقية؟<span aria-hidden="true"></span></summary><p>لا. المنتجات المعروضة بيانات توضيحية وليست أكوادًا فعالة أو مخزونًا حقيقيًا. ستحتاج أي نسخة تجارية إلى مصدر منتجات وتسليم موثوق ومصرّح به.</p></details>
+          <details><summary>كيف يمكن أن يصبح الموقع متجرًا حقيقيًا؟<span aria-hidden="true"></span></summary><p>عبر إعداد قاعدة بيانات واستضافة آمنة، والتحقق من مزود دفع ومورد منتجات مخوّل، ثم اختبار الطلبات والدفع والتسليم وسياسات الدعم والاسترداد قبل الإطلاق.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-info-section" id="site-info">
+      <div class="container site-info-grid">
+        <div class="site-info-brand"><a class="brand" href="#top"><span class="brand-symbol" aria-hidden="true"><span class="symbol-core">B</span><span class="symbol-spark">✦</span></span><span class="brand-wordmark"><strong>BLUE<span>DROP</span></strong><small>PLAY YOUR WAY</small></span></a><p>متجر تجريبي مستقل لتصوّر تجربة شراء رقمية عربية أكثر وضوحًا وأناقة.</p></div>
+        <div><h3>استكشف</h3><a href="#shop">المتجر</a><a href="#benefits">مميزات التجربة</a><a href="#how-it-works">كيف يعمل؟</a><a href="#faq">الأسئلة الشائعة</a></div>
+        <div><h3>معلومات</h3><a href="#terms">شروط الاستخدام</a><a href="#privacy">الخصوصية</a><a href="#refunds">الاسترداد والإلغاء</a><a href="#contact">الدعم والتواصل</a></div>
+        <div class="demo-status-card"><span class="status-light" aria-hidden="true"></span><strong>نسخة معاينة</strong><p>الطلبات والدفع والتسليم الحقيقي غير مفعّلة.</p><a href="#shop">تصفّح العناصر <span aria-hidden="true">←</span></a></div>
+      </div>
+      <div class="container legal-notes">
+        <section id="terms"><h3>شروط الاستخدام</h3><p>هذه الواجهة معروضة لأغراض التجربة والتطوير. العناصر والأسعار ليست عروض بيع فعلية، ولا ينشأ عن استخدامها طلب تجاري أو التزام بالتسليم.</p></section>
+        <section id="privacy"><h3>الخصوصية</h3><p>لا تدخل كلمات مرور أو رموز تحقق أو بيانات دفع. معرّف اللاعب في نموذج الاختبار لا يُحفظ ضمن سجل الطلب التجريبي في الخادم.</p></section>
+        <section id="refunds"><h3>الإلغاء والاسترداد</h3><p>لا توجد مدفوعات فعلية في هذه النسخة، لذلك لا تتم عمليات شراء أو استرداد حقيقية.</p></section>
+        <section id="contact"><h3>الدعم والتواصل</h3><p>قنوات الدعم التجاري ليست مفعّلة في النسخة الحالية. ستُضاف معلومات التواصل قبل إطلاق متجر حقيقي.</p></section>
+      </div>
+    </section>
   </main>
-  <footer><div class="container footer-row"><a class="brand" href="#home"><span class="brand-mark">B<span>◆</span></span><span class="brand-copy"><strong>BLUE<span>DROP</span></strong><small>FREE FIRE STORE</small></span></a><p>© <span id="year"></span> BlueDrop. واجهة تجريبية مستقلة.</p><a href="#about">سياسة الاستخدام والخصوصية</a></div></footer>
 
-  <div class="backdrop" id="drawerBackdrop" hidden></div><aside class="drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" hidden><div class="drawer-head"><div><div class="eyebrow">مشترياتك</div><h2 id="cartTitle">سلة المتجر <small id="drawerItemCount">(0)</small></h2></div><button class="icon-close" id="closeCart" type="button" aria-label="إغلاق السلة">×</button></div><div class="cart-items" id="cartItems"></div><div class="cart-empty" id="cartEmpty"><span>🛒</span><h3>سلتك فارغة</h3><p>أضف بعض العناصر لتظهر هنا.</p><button class="button secondary" id="browseProducts" type="button">تصفّح العناصر</button></div><div class="drawer-footer" id="drawerFooter"><div class="total"><span>المجموع التجريبي</span><strong id="cartTotal">0 د.ج</strong></div><p>لا يتم تحصيل أي مبلغ في هذه النسخة.</p><button class="button primary full" id="checkoutButton" type="button">متابعة الطلب ←</button></div></aside>
-  <div class="modal-backdrop" id="checkoutBackdrop" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle"><div class="drawer-head"><div><div class="eyebrow">خطوة أخيرة</div><h2 id="checkoutTitle">معاينة الطلب</h2></div><button class="icon-close" id="closeCheckout" type="button" aria-label="إغلاق النافذة">×</button></div><div class="demo-warning">ⓘ &nbsp; هذا نموذج توضيحي فقط. لا توجد عملية دفع أو شحن متصلة.</div><form id="checkoutForm"><label for="playerId">معرّف اللاعب (Player ID)</label><input class="form-input" id="playerId" name="playerId" inputmode="numeric" pattern="[0-9]{6,16}" minlength="6" maxlength="16" placeholder="أدخل أرقام المعرّف فقط" required><small class="help">لا تدخل كلمة المرور أو رمز التحقق مطلقًا.</small><div class="summary"><span>عدد العناصر</span><b id="checkoutCount">0</b><span>المجموع التجريبي</span><b id="checkoutTotal">0 د.ج</b></div><button class="button primary full" type="submit">عرض نتيجة الاختبار</button></form></section></div>
+  <footer class="site-footer"><div class="container footer-inner"><span>© <span id="year"></span> BlueDrop. مشروع مستقل تجريبي.</span><span>غير تابع رسميًا لشركة Garena أو Free Fire.</span><a href="#top">العودة للأعلى ↑</a></div></footer>
+
+  <div class="overlay" id="overlay" hidden></div>
+  <aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" hidden>
+    <div class="drawer-header"><div><span class="section-eyebrow">اختياراتك</span><h2 id="cartTitle">سلة المشتريات <small id="drawerCount">0 عناصر</small></h2></div><button class="icon-button close-overlay" id="closeCart" type="button" aria-label="إغلاق السلة">×</button></div>
+    <div class="drawer-items" id="cartItems"></div>
+    <div class="drawer-empty" id="cartEmpty"><span aria-hidden="true">▣</span><h3>سلتك فارغة الآن</h3><p>اكتشف المنتجات وأضف اختياراتك إلى السلة.</p><button class="button button-ghost close-overlay" id="browseCatalog" type="button">تصفّح المتجر</button></div>
+    <div class="drawer-footer" id="drawerFooter"><div class="total-row"><span>المجموع التجريبي</span><strong id="cartTotal">0 د.ج</strong></div><p>لن يتم تحصيل أي مبلغ من خلال هذه النسخة.</p><button class="button button-primary full-width" id="checkoutButton" type="button">متابعة إلى المعاينة <span aria-hidden="true">←</span></button></div>
+  </aside>
+
+  <div class="dialog-backdrop" id="productDialogBackdrop" hidden>
+    <section class="product-dialog" role="dialog" aria-modal="true" aria-labelledby="dialogProductName">
+      <button class="icon-button dialog-close" data-close-dialog type="button" aria-label="إغلاق تفاصيل المنتج">×</button>
+      <div class="dialog-product-art" id="dialogProductArt" aria-hidden="true"><span id="dialogProductEmoji">💎</span></div>
+      <div class="dialog-product-copy"><span class="product-category" id="dialogProductCategory"></span><h2 id="dialogProductName"></h2><p id="dialogProductDescription"></p><div class="dialog-price"><strong id="dialogProductPrice"></strong><span>سعر توضيحي</span></div><button class="button button-primary full-width" id="dialogAddToCart" type="button">أضف إلى السلة <span aria-hidden="true">←</span></button><small class="dialog-note">عنصر تجريبي — لا يوجد تسليم حقيقي.</small></div>
+    </section>
+  </div>
+
+  <div class="dialog-backdrop" id="checkoutBackdrop" hidden>
+    <section class="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+      <div class="drawer-header"><div><span class="section-eyebrow">الخطوة الأخيرة</span><h2 id="checkoutTitle">معاينة الطلب</h2></div><button class="icon-button dialog-close" data-close-checkout type="button" aria-label="إغلاق المعاينة">×</button></div>
+      <div class="checkout-warning"><span aria-hidden="true">ⓘ</span><p>وضع تجريبي فقط. لا توجد بوابة دفع أو خدمة شحن متصلة.</p></div>
+      <form id="checkoutForm" novalidate>
+        <label for="playerId">معرّف اللاعب <span>(اختياري في المعاينة)</span></label><input class="form-input" id="playerId" name="playerId" inputmode="numeric" pattern="[0-9]{6,16}" minlength="6" maxlength="16" placeholder="6 إلى 16 رقمًا — أو اتركه فارغًا" autocomplete="off"><small class="input-help">لن يُحفظ هذا المعرّف. لا تدخل كلمة المرور أو رمز التحقق.</small>
+        <div class="checkout-summary"><span>عدد العناصر</span><strong id="checkoutCount">0</strong><span>المجموع التجريبي</span><strong id="checkoutTotal">0 د.ج</strong></div>
+        <button class="button button-primary full-width" id="submitOrder" type="submit">إنشاء طلب تجريبي</button>
+      </form>
+    </section>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-</body></html>
+</body>
+</html>
