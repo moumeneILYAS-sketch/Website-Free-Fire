@@ -7,3 +7,4 @@ node_modules/
 coverage/
 *.sqlite
 *.db
+/preview.png
