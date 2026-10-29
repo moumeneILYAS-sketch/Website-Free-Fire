@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071326">
+  <title>BlueDrop Admin</title>
+  <link rel="stylesheet" href="/admin/admin.css">
+  <script src="/admin/admin.js" defer></script>
+</head>
+<body>
+  <header class="admin-header"><a class="admin-brand" href="/">BD <span>BLUE</span>DROP <small>ADMIN</small></a><a href="/" class="return-link">العودة للمتجر ←</a></header>
+  <main class="admin-main">
+    <div class="admin-intro"><div><span class="eyebrow">CONTROL CENTER</span><h1>لوحة الإدارة</h1><p>إدارة كتالوج المعاينة ومراجعة سجلات الطلبات التجريبية.</p></div><button class="refresh-button" id="refreshDashboard" type="button">↻ تحديث البيانات</button></div>
+    <div class="admin-banner"><strong>⚠ وضع المعاينة</strong><span>لا توجد مدفوعات أو عمليات شحن حقيقية. الطلبات الظاهرة تجريبية فقط.</span></div>
+    <div class="stat-grid" id="adminStats" aria-live="polite"><div class="stat-card skeleton"></div><div class="stat-card skeleton"></div><div class="stat-card skeleton"></div></div>
+    <section class="admin-panel"><div class="panel-heading"><div><span class="eyebrow">CATALOG</span><h2>المنتجات</h2><p>التعديل الدائم يتطلب إعداد قاعدة PostgreSQL.</p></div><button class="button button-primary" id="toggleNewProduct" type="button">+ إضافة منتج</button></div>
+      <form id="newProductForm" class="new-product-form" hidden>
+        <div class="form-grid"><label>اسم المنتج<input name="name" required minlength="2" maxlength="90" placeholder="اسم واضح للمنتج"></label><label>Slug (إنجليزي)<input name="slug" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" maxlength="90" placeholder="product-short-name"></label><label>الفئة<select name="category" required><option value="diamonds">الجواهر</option><option value="codes">الأكواد</option><option value="skins">السكنات</option><option value="emotes">الرقصات</option></select></label><label>السعر بالدينار الجزائري<input name="price" required type="number" min="1" max="100000000" step="1"></label><label>رمز تعبيري<input name="emoji" required maxlength="12" value="✦"></label><label>شارة<input name="badge" maxlength="40" value="تجريبي"></label><label class="wide-field">الوصف<textarea name="description" maxlength="500" rows="2" placeholder="وصف قصير وصادق"></textarea></label></div>
+        <div class="form-actions"><button class="button button-primary" type="submit">حفظ المنتج</button><button class="button button-ghost" id="cancelNewProduct" type="button">إلغاء</button></div>
+      </form>
+      <div class="table-wrap"><table><thead><tr><th>المنتج</th><th>الفئة</th><th>السعر</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="productsBody"><tr><td colspan="5">جارٍ تحميل الكتالوج…</td></tr></tbody></table></div>
+      <p class="table-note" id="catalogNotice"></p>
+    </section>
+    <section class="admin-panel"><div class="panel-heading"><div><span class="eyebrow">ORDER LOG</span><h2>الطلبات التجريبية</h2><p>لا تتضمن سجلات الطلبات معرّف اللاعب أو بيانات اعتماد أو معلومات دفع.</p></div></div><div class="table-wrap"><table><thead><tr><th>المرجع</th><th>عدد العناصر</th><th>المجموع</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody id="ordersBody"><tr><td colspan="5">جارٍ تحميل الطلبات…</td></tr></tbody></table></div></section>
+    <div class="admin-footer"><span>BlueDrop · Demo operations</span><span id="adminStatus" role="status">جاهز</span></div>
+  </main>
+  <div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
+</body>
+</html>
