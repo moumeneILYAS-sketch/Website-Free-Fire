@@ -1,81 +1,77 @@
 # BlueDrop — Free Fire Storefront Demo
 
-BlueDrop is an Arabic-first, right-to-left gaming storefront prototype. The source is deliberately kept small and dependency-light on the client, with a Node.js HTTP API and an optional PostgreSQL-backed demo data layer.
+BlueDrop is an Arabic-first, right-to-left gaming storefront prototype. This repository includes a premium blue storefront, accessible animations, a Node.js API for self-hosting, and Vercel-compatible static output and serverless API functions.
 
-> **Important:** this repository is still a demo. It does not sell real products, accept payments, redeem codes, or deliver Free Fire items. Product names and prices are illustrative. Real commerce must remain disabled until an authorized product supplier and payment provider are selected and verified.
+> **Demo only:** this repository does not sell real products, accept payments, redeem codes, or deliver Free Fire items. Prices are illustrative. Real commerce must remain disabled until authorized product supply and payment services are verified.
 
-## Current features
+## Features
 
-- Premium dark-blue visual system with an animated CSS gem, layered lighting, orbital details, card hover states, scroll reveals, dialog/drawer motion, and motion-reduction support.
-- Arabic RTL storefront, category navigation, filtering, search, sorting, product detail dialog, persistent local cart, quantity changes, and demo checkout.
-- One shared demo catalog (`catalog.js`) used by the browser and server.
-- Node.js API endpoints for the catalog, health, and explicitly demo-only orders.
-- Server-side pricing and request validation; per-IP rate limit; same-origin checks; idempotency keys; security response headers; and static-file allowlisting.
-- The demo order endpoint deliberately does not persist or echo the player ID. Never provide passwords, one-time codes, or payment credentials to this prototype.
-- Optional PostgreSQL schema and persistent demo-order records; a protected, HTTP Basic-authenticated admin page for PostgreSQL product management and demo-order review.
-- Built-in Node test suite and GitHub Actions checks.
+- Premium navy, electric-blue and cyan visual system, animated crystal hero, product reveal motion and reduced-motion support.
+- Arabic RTL storefront, search, category filters, sorting, product details, persistent cart and demo checkout.
+- Shared catalog for the browser and local Node.js server.
+- Vercel API endpoints: `/api/health`, `/api/products` and `/api/orders`.
+- Server-side price calculation, strict request validation, idempotency keys, same-origin checking, best-effort rate limiting and security headers.
+- Optional PostgreSQL persistence for demonstration orders and product management.
+- A protected admin interface for the self-hosted Node.js setup.
+- Automated unit/API tests and GitHub Actions checks.
 
-## Requirements
+## Local requirements
 
 - Node.js 22 or newer.
-- PostgreSQL only if you want persistent demo orders and durable product administration.
+- PostgreSQL only for persistent demonstration orders and database-backed product administration.
 
-## Run locally (no database needed)
+## Run locally
 
 ```bash
+npm install
 npm run check
 npm test
 npm start
 ```
 
-Open <http://localhost:3000>. The default mode uses an in-memory demo order store. It is intentionally not suitable for production orders.
+Open <http://localhost:3000>. Without `DATABASE_URL`, the local Node server uses the demo catalog and deliberately does not persist demo orders. The public Vercel API has the same catalog fallback, but order creation requires a configured persistent database.
 
-## API endpoints
+## Deploy on Vercel
+
+The `public/` folder is the Vercel output directory. Vercel's default for an "Other" project can select `public/` when that folder exists; the homepage source lives at the repository root. The `vercel.json` configuration explicitly selects the public output, and `npm run vercel-build` copies the approved storefront assets into it. This avoids a deployment output that contains only the favicon and therefore returns a 404 for the homepage.
+
+1. In Vercel, make sure the project is connected to this repository and the production branch is `main`.
+2. Use the repository root as the Root Directory.
+3. The committed `vercel.json` sets Build Command to `npm run vercel-build` and Output Directory to `public`. Do not override those values with a different output directory.
+4. Pushes to `main` should trigger a new Vercel deployment if the Git connection is enabled. Check the latest deployment's build logs and confirm its deployment output contains `index.html`, `styles.css`, `app.js`, `catalog.js` and `favicon.svg`.
+5. The Vercel project auto-detects the `api/` serverless functions. After deployment, test `/api/health` and `/api/products`.
+
+The `/admin` page and the full administrative API are currently for the self-hosted Node.js server. They are not included in the public Vercel output. Do not copy admin assets into `public/` or expose them without a separate protected serverless implementation.
+
+### Optional PostgreSQL for demo orders
+
+To enable persistent **demo-only** order receipts on Vercel:
+
+1. Create a PostgreSQL database and apply `database/schema.sql` once using your database provider's SQL console or a trusted migration environment.
+2. Add `DATABASE_URL` to the Vercel project's Production environment variables.
+3. Set `DATABASE_SSL=true` only if your provider uses TLS with a verifiable certificate chain.
+4. Redeploy, then check `/api/health`.
+
+Without a configured database, `/api/orders` returns `503` instead of pretending to create a persistent order. The endpoint is not a payment processor or game-item fulfillment service.
+
+## Local API endpoints
 
 | Endpoint | Method | Purpose |
-|---|---|---|
-| `/api/health` | GET | Reports demo mode and database configuration; never indicates payments or fulfillment are enabled. |
-| `/api/products` | GET | Returns active demo products. |
-| `/api/orders` | POST | Creates an idempotent, non-commercial demo receipt. No payment or fulfillment occurs. |
-| `/api/admin/overview` | GET | Protected administrative health summary. |
-| `/api/admin/products` | GET / POST | Protected catalog view and product creation (writes require PostgreSQL). |
-| `/api/admin/products/:id` | PATCH | Protected product update/deactivation (writes require PostgreSQL). |
-| `/api/admin/orders` | GET | Protected view of demo-only order summaries. |
-| `/admin` | GET | Protected administrative page; disabled until credentials are configured. |
+| --- | --- | --- |
+| `/api/health` | GET | Health and explicit demo-only status |
+| `/api/products` | GET | Active catalog |
+| `/api/orders` | POST | Idempotent demo receipt; no payment or fulfillment |
+| `/api/admin/overview` | GET | Protected admin summary on the self-hosted server |
+| `/api/admin/products` | GET / POST | Protected product administration on the self-hosted server |
+| `/api/admin/products/:id` | PATCH | Protected product update/deactivation |
+| `/api/admin/orders` | GET | Protected demo-order review |
 
-The static server intentionally serves only approved public assets, not source files, environment files, the database schema, or repository metadata.
+## Security and production-readiness
 
-## PostgreSQL setup
+- Never enter Free Fire passwords, one-time authentication codes or payment credentials.
+- Prices are calculated from trusted server-side catalog data, never from client-supplied prices.
+- Payment confirmation and fulfillment are not implemented; the API explicitly reports both disabled.
+- Admin credentials must be configured outside source control for self-hosting.
+- Before any real sales, verify authorized supply, local payment support, signed payment webhooks, refund policy, privacy obligations, durable order handling, monitoring and backups.
 
-1. Create a PostgreSQL database using your hosting provider.
-2. Copy `.env.example` to `.env` in your local environment and set `DATABASE_URL`. Do not commit `.env` or actual credentials.
-3. Install dependencies and apply the schema:
-
-   ```bash
-   npm install
-   npm run db:migrate
-   npm start
-   ```
-
-4. On startup, the app seeds the database from `catalog.js` only if the `products` table is empty. After that, the database catalog is authoritative.
-
-Set `DATABASE_SSL=true` only when the database provider supports TLS with a verifiable certificate chain. If the provider gives a CA certificate, configure it with your deployment rather than disabling certificate verification.
-
-## Admin setup
-
-Set `ADMIN_USERNAME` and a unique `ADMIN_PASSWORD` of at least 16 characters before starting the server. Visit `/admin`; the browser will request HTTP Basic authentication. Admin static JavaScript/CSS contains no secrets, while the HTML route and all admin APIs are protected by server-side authorization.
-
-For a public deployment, use HTTPS at the reverse proxy and ensure it supplies `X-Forwarded-Proto: https`. Do not put admin credentials in source control, query strings, frontend code, logs, or screenshots. Basic authentication is a minimal operational gate, not a substitute for a managed identity provider, MFA, or a production security review.
-
-## Production-readiness gates
-
-Before real sales are enabled, the project still requires an authorized product/fulfillment integration, a locally available payment provider that supports the merchant account, verified payment notifications, refunds and support operations, stronger staff identity management, persistent customer/order handling appropriate to the actual service, monitoring, backups, and a deployment review. The current endpoints intentionally do not pretend to perform payment or game-item delivery.
-
-## Security notes
-
-- Prices are taken from server-side catalog data; client-supplied prices are ignored.
-- User-provided cart contents are validated, quantities are bounded, and duplicate items are combined.
-- Orders use an idempotency key and return a conflict if that key is reused for a different cart.
-- No player password, authentication code, or payment data is requested or stored.
-- SQL queries use parameters for values. Administrative update columns are allowlisted.
-- Run `npm run check` and `npm test` before publishing changes.
+Run `npm run check`, `npm run vercel-build` and `npm test` before release. See `TEST_REPORT.md` for the automated coverage and remaining manual deployment checks.
