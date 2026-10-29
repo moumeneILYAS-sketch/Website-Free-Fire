@@ -1,0 +1,87 @@
+'use strict';
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { handleProducts, handleHealth, handleOrder } = require('../lib/vercel-api');
+
+function mockResponse() {
+  return {
+    statusCode: 200,
+    headers: {},
+    body: '',
+    setHeader(name, value) { this.headers[name.toLowerCase()] = value; },
+    end(body = '') { this.body = body; this.ended = true; }
+  };
+}
+
+function parsed(res) {
+  return JSON.parse(res.body || '{}');
+}
+
+test('Vercel product endpoint returns the bundled demo catalog', async () => {
+  const previous = process.env.DATABASE_URL;
+  delete process.env.DATABASE_URL;
+  try {
+    const res = mockResponse();
+    await handleProducts({ method: 'GET', headers: {} }, res);
+    const data = parsed(res);
+    assert.equal(res.statusCode, 200);
+    assert.equal(data.ok, true);
+    assert.ok(data.products.length >= 8);
+    assert.ok(data.products.every(product => Number.isSafeInteger(product.price) && product.price > 0));
+    assert.equal(res.headers['cache-control'], 'no-store');
+  } finally {
+    if (previous === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = previous;
+  }
+});
+
+test('Vercel health endpoint explicitly reports that live commerce is disabled', async () => {
+  const previous = process.env.DATABASE_URL;
+  delete process.env.DATABASE_URL;
+  try {
+    const res = mockResponse();
+    await handleHealth({ method: 'GET', headers: {} }, res);
+    const data = parsed(res);
+    assert.equal(res.statusCode, 200);
+    assert.equal(data.paymentsEnabled, false);
+    assert.equal(data.fulfillmentEnabled, false);
+    assert.equal(data.demoOrdersEnabled, false);
+  } finally {
+    if (previous === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = previous;
+  }
+});
+
+test('Vercel order endpoint will not claim an order was created without a database', async () => {
+  const previous = process.env.DATABASE_URL;
+  delete process.env.DATABASE_URL;
+  try {
+    const res = mockResponse();
+    await handleOrder({
+      method: 'POST',
+      url: '/api/orders',
+      headers: {
+        host: 'example.vercel.app',
+        origin: 'https://example.vercel.app',
+        'content-type': 'application/json',
+        'idempotency-key': 'test-key-12345678'
+      },
+      body: { playerId: '', items: [{ productId: 1, quantity: 1 }] },
+      socket: { remoteAddress: '127.0.0.1' }
+    }, res);
+    assert.equal(res.statusCode, 503);
+    assert.equal(parsed(res).ok, false);
+    assert.match(parsed(res).error, /PostgreSQL/);
+  } finally {
+    if (previous === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = previous;
+  }
+});
+
+test('Vercel API rejects unsupported methods', async () => {
+  const res = mockResponse();
+  await handleProducts({ method: 'POST', headers: {} }, res);
+  assert.equal(res.statusCode, 405);
+  assert.equal(res.headers.allow, 'GET');
+});
