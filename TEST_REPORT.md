@@ -1,40 +1,34 @@
 # BlueDrop verification report
 
-This report records local checks for the source files in this repository. It is not a claim that live payments, real product fulfillment, or a production database have been tested.
+This report separates automated repository checks from deployment checks that require the user's Vercel project.
 
-## Automated checks
+## Automated CI checks
 
-Run:
+The GitHub Actions workflow runs on Node.js 22 and 24:
 
 ```bash
 npm run check
+npm run vercel-build
 npm test
 ```
 
-The included tests cover:
+Coverage includes catalog integrity and pricing, input validation, demo-order behavior, source-of-truth server totals, response security headers, Vercel API handlers, and verifying that Vercel's static output contains `index.html`, `styles.css`, `app.js`, `catalog.js`, and `favicon.svg`.
 
-- Catalog IDs, slugs, categories, and positive integer DZD pricing.
-- Server-side total calculation and ignored client-supplied prices.
-- Rejection of unknown products, invalid quantities, bad player IDs, missing idempotency keys, wrong content type, and foreign origins.
-- Idempotent replay and conflicting reuse of a key.
-- API health and product listing in local demo mode.
-- Security headers and static-file allowlisting.
-- Admin route behavior when credentials are not configured.
+## Vercel deployment configuration
 
-## Manual verification checklist
+- `vercel.json` explicitly selects `npm run vercel-build` and the `public` output directory.
+- `scripts/prepare-vercel.js` copies only the approved storefront assets into `public`; server source, database schema, tests and environment files are not included in the static output.
+- Serverless functions provide `/api/health`, `/api/products` and `/api/orders`.
+- The product API serves the bundled demo catalog without a database. Order creation returns HTTP 503 unless a persistent PostgreSQL database is configured; payments and fulfillment always remain disabled.
 
-- [ ] Browse the page at desktop and mobile widths.
-- [ ] Search products, switch category filters, and sort by price/name.
-- [ ] Open and close product details and cart using mouse, keyboard, and Escape.
-- [ ] Add/remove products, adjust quantities, and reload to confirm cart persistence.
-- [ ] Submit an empty cart (must be blocked) and a demo order (must clearly state no payment or delivery occurred).
-- [ ] Set up PostgreSQL, run the schema migration, and test the persistent mode in a dedicated test database.
-- [ ] Configure admin credentials and verify authorized/unauthorized access over HTTPS in the deployment environment.
-- [ ] Run external accessibility, performance, and security assessments before a public commercial launch.
+## Manual checks still required
 
-## Current limitations
+After Vercel creates a production deployment, confirm that its output contains `index.html` and the four local assets above. Then verify:
 
-- Product images are original CSS/emoji-style placeholders, not official game artwork.
-- There is no live payment provider, official top-up provider, code inventory, or fulfillment integration.
-- In-memory orders disappear when the server restarts; durable demo summaries require PostgreSQL.
-- The admin panel uses HTTP Basic authentication as a minimal gate and should be replaced or strengthened for a real production operation.
+- `/` returns the storefront rather than a 404.
+- `/api/health` returns JSON with payments and fulfillment disabled.
+- `/api/products` returns the demo catalog.
+- `/api/orders` returns a clear 503 while PostgreSQL is not configured.
+- The Vercel deployment URL is assigned to `freefireshop.vercel.app` and marked Ready.
+
+The live Vercel dashboard, deployment logs, DNS/domain assignment and production browser rendering cannot be proven by static repository tests alone. No live payments, real top-ups, redeemable codes or game-item delivery have been tested or enabled.
