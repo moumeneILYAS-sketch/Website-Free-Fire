@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS demo_orders (
 -- Safe additive migration for databases created before payment-method previews were added.
 ALTER TABLE demo_orders
   ADD COLUMN IF NOT EXISTS payment_method VARCHAR(20) NOT NULL DEFAULT 'edahabia';
-DO $
+DO $payment_method_migration$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM pg_constraint
@@ -47,8 +47,8 @@ BEGIN
       ADD CONSTRAINT demo_orders_payment_method_check
       CHECK (payment_method IN ('cib','edahabia','visa','mastercard','paypal','baridimob'));
   END IF;
-END
-$;
+END;
+$payment_method_migration$;
 CREATE INDEX IF NOT EXISTS demo_orders_created_at_idx ON demo_orders(created_at DESC);
 
 CREATE TABLE IF NOT EXISTS admin_audit_events (
