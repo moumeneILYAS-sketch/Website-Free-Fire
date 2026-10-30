@@ -37,7 +37,18 @@
       </nav>
 
       <div class="header-actions">
-        <button class="icon-action search-toggle" id="focusSearch" type="button" aria-label="البحث عن منتج" title="البحث (Ctrl+K)">
+  <div class="google-auth-wrap" id="googleAuthWrap">
+    <button class="google-signin-fallback" id="googleSignInFallback" type="button" disabled title="يتطلب إعداد بيانات Google OAuth">
+      <span class="google-mark" aria-hidden="true">G</span><span>Google</span>
+    </button>
+    <div id="googleSignInSlot" class="google-signin-slot" hidden></div>
+    <div class="google-user-controls" id="googleUserControls" hidden>
+      <span class="google-account-name" id="googleAccountName"></span>
+      <button class="google-signout" id="googleSignOut" type="button">خروج</button>
+    </div>
+    <small class="google-auth-hint" id="googleAuthHint">تسجيل Google قيد الإعداد</small>
+  </div>
+  <button class="icon-action search-toggle" id="focusSearch" type="button" aria-label="البحث عن منتج" title="البحث (Ctrl+K)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.2 4.2"></path></svg>
         </button>
         <button class="cart-trigger" id="openCart" type="button" aria-label="فتح سلة المشتريات">
@@ -219,8 +230,38 @@
   <div class="dialog-backdrop" id="checkoutBackdrop" hidden>
     <section class="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
       <div class="drawer-header"><div><span class="section-eyebrow">الخطوة الأخيرة</span><h2 id="checkoutTitle">معاينة الطلب</h2></div><button class="icon-button dialog-close" data-close-checkout type="button" aria-label="إغلاق المعاينة">×</button></div>
-      <div class="checkout-warning"><span aria-hidden="true">ⓘ</span><p>وضع تجريبي فقط. لا توجد بوابة دفع أو خدمة شحن متصلة.</p></div>
+      <div class="checkout-warning"><span aria-hidden="true">ⓘ</span><p>وضع تجريبي فقط. لا توجد بوابة دفع أو خدمة شحن متصلة. لا تُحوّل أي مبلغ ولا تدخل بيانات بطاقتك.</p></div>
       <form id="checkoutForm" novalidate>
+        <fieldset class="payment-fieldset">
+          <legend>اختر وسيلة الدفع للمعاينة</legend>
+          <div class="payment-method-grid">
+            <label class="payment-method">
+              <input type="radio" name="paymentMethod" value="edahabia" checked>
+              <span class="payment-method-name">الذهبية</span><small>EDAHABIA</small><b>غير متصلة</b>
+            </label>
+            <label class="payment-method">
+              <input type="radio" name="paymentMethod" value="cib">
+              <span class="payment-method-name">بطاقة CIB</span><small>الدفع المحلي</small><b>غير متصلة</b>
+            </label>
+            <label class="payment-method">
+              <input type="radio" name="paymentMethod" value="visa">
+              <span class="payment-method-name">Visa</span><small>دفع دولي</small><b>قيد الدراسة</b>
+            </label>
+            <label class="payment-method">
+              <input type="radio" name="paymentMethod" value="mastercard">
+              <span class="payment-method-name">Mastercard</span><small>دفع دولي</small><b>قيد الدراسة</b>
+            </label>
+            <label class="payment-method">
+              <input type="radio" name="paymentMethod" value="paypal">
+              <span class="payment-method-name">PayPal</span><small>دفع إلكتروني</small><b>غير متصل</b>
+            </label>
+            <label class="payment-method">
+              <input type="radio" name="paymentMethod" value="baridimob">
+              <span class="payment-method-name">BaridiMob</span><small>مراجعة يدوية</small><b>محاكاة فقط</b>
+            </label>
+          </div>
+          <p class="payment-method-notice" id="paymentMethodNotice" aria-live="polite">الدفع بالبطاقة الذهبية غير متصل بعد. هذا الاختيار يحفظ نوع الوسيلة في الطلب التجريبي فقط.</p>
+        </fieldset>
         <label for="playerId">معرّف اللاعب <span>(اختياري في المعاينة)</span></label><input class="form-input" id="playerId" name="playerId" inputmode="numeric" pattern="[0-9]{6,16}" minlength="6" maxlength="16" placeholder="6 إلى 16 رقمًا — أو اتركه فارغًا" autocomplete="off"><small class="input-help">لن يُحفظ هذا المعرّف. لا تدخل كلمة المرور أو رمز التحقق.</small>
         <div class="checkout-summary"><span>عدد العناصر</span><strong id="checkoutCount">0</strong><span>المجموع التجريبي</span><strong id="checkoutTotal">0 د.ج</strong></div>
         <button class="button button-primary full-width" id="submitOrder" type="submit">إنشاء طلب تجريبي</button>

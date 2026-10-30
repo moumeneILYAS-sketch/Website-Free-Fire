@@ -81,6 +81,39 @@ test('home page serves the storefront and security headers', async () => {
   });
 });
 
+test('Google sign-in endpoint is disabled unless the owner configures it', async () => {
+  const previousClientId = process.env.GOOGLE_CLIENT_ID;
+  const previousSecret = process.env.AUTH_SESSION_SECRET;
+  delete process.env.GOOGLE_CLIENT_ID;
+  delete process.env.AUTH_SESSION_SECRET;
+  try {
+    await withServer(async baseUrl => {
+      const response = await fetch(baseUrl + '/api/auth/google');
+      const data = await response.json();
+      assert.equal(response.status, 200);
+      assert.equal(data.ok, true);
+      assert.equal(data.enabled, false);
+      assert.equal(data.user, null);
+    });
+  } finally {
+    if (previousClientId === undefined) delete process.env.GOOGLE_CLIENT_ID;
+    else process.env.GOOGLE_CLIENT_ID = previousClientId;
+    if (previousSecret === undefined) delete process.env.AUTH_SESSION_SECRET;
+    else process.env.AUTH_SESSION_SECRET = previousSecret;
+  }
+});
+
+test('storefront exposes demo-only account and payment controls', async () => {
+  await withServer(async baseUrl => {
+    const html = await (await fetch(baseUrl + '/')).text();
+    assert.match(html, /googleSignInFallback/);
+    for (const method of ['edahabia', 'cib', 'visa', 'mastercard', 'paypal', 'baridimob']) {
+      assert.match(html, new RegExp('value="' + method + '"'));
+    }
+    assert.match(html, /لا تُحوّل أي مبلغ/);
+  });
+});
+
 test('health and products endpoints respond in memory demo mode', async () => {
   await withServer(async baseUrl => {
     const healthResponse = await fetch(baseUrl + '/api/health');
@@ -102,6 +135,7 @@ test('demo order validates payload and never echoes the player id', async () => 
   await withServer(async baseUrl => {
     const response = await postJson(baseUrl, '/api/orders', {
       playerId: '12345678',
+      paymentMethod: 'baridimob',
       items: [{ productId: 1, quantity: 2, price: 1 }]
     }, { 'Idempotency-Key': 'test-order-key-01' });
     const result = await response.json();
@@ -109,6 +143,7 @@ test('demo order validates payload and never echoes the player id', async () => 
     assert.equal(result.ok, true);
     assert.equal(result.order.total, 500);
     assert.equal(result.order.status, 'DEMO_ONLY_NOT_FULFILLED');
+    assert.equal(result.order.paymentMethod, 'baridimob');
     assert.equal(Object.hasOwn(result.order, 'playerId'), false);
     assert.equal(JSON.stringify(result).includes('12345678'), false);
   });
@@ -116,13 +151,17 @@ test('demo order validates payload and never echoes the player id', async () => 
 
 test('idempotency returns the same demo order for a repeated matching request', async () => {
   await withServer(async baseUrl => {
-    const body = { playerId: '', items: [{ productId: 2, quantity: 1 }] };
+    const body = { playerId: '', paymentMethod: 'edahabia', items: [{ productId: 2, quantity: 1 }] };
     const headers = { 'Idempotency-Key': 'test-idempotency-02' };
     const first = await (await postJson(baseUrl, '/api/orders', body, headers)).json();
     const secondResponse = await postJson(baseUrl, '/api/orders', body, headers);
     const second = await secondResponse.json();
     assert.equal(secondResponse.status, 201);
     assert.equal(second.order.reference, first.order.reference);
+    const changedMethod = await postJson(baseUrl, '/api/orders', {
+      ...body, paymentMethod: 'cib'
+    }, headers);
+    assert.equal(changedMethod.status, 409, 'idempotency must include the selected demo payment method');
   });
 });
 
@@ -139,6 +178,11 @@ test('order endpoint rejects invalid identifiers, missing keys, bad content type
   await withServer(async baseUrl => {
     const invalidId = await postJson(baseUrl, '/api/orders', { playerId: '12', items: [{ productId: 1, quantity: 1 }] }, { 'Idempotency-Key': 'test-invalid-id-04' });
     assert.equal(invalidId.status, 400);
+
+    const invalidMethod = await postJson(baseUrl, '/api/orders', {
+      paymentMethod: 'unknown', items: [{ productId: 1, quantity: 1 }]
+    }, { 'Idempotency-Key': 'test-invalid-payment-method-07' });
+    assert.equal(invalidMethod.status, 400);
 
     const missingKey = await postJson(baseUrl, '/api/orders', { items: [{ productId: 1, quantity: 1 }] });
     assert.equal(missingKey.status, 400);

@@ -8,6 +8,8 @@ BlueDrop is an Arabic-first, right-to-left gaming storefront prototype. This rep
 
 - Premium navy, electric-blue and cyan visual system, animated crystal hero, product reveal motion and reduced-motion support.
 - Arabic RTL storefront, search, category filters, sorting, product details, persistent cart and demo checkout.
+- Optional Google Identity Services sign-in with server-side ID-token verification and encrypted HTTP-only sessions.
+- Demo-only payment-method selector for CIB, EDAHABIA, Visa, Mastercard, PayPal and manual BaridiMob review; no payment credentials or transfers are collected.
 - Shared catalog for the browser and local Node.js server.
 - Vercel API endpoints: `/api/health`, `/api/products` and `/api/orders`.
 - Server-side price calculation, strict request validation, idempotency keys, same-origin checking, best-effort rate limiting and security headers.
@@ -54,12 +56,34 @@ To enable persistent **demo-only** order receipts on Vercel:
 
 Without a configured database, `/api/orders` returns `503` instead of pretending to create a persistent order. The endpoint is not a payment processor or game-item fulfillment service.
 
+## Google sign-in setup (optional)
+
+Google sign-in is disabled by default. To enable it for a site you control:
+
+1. In Google Cloud Console, create an OAuth client of type **Web application** and configure the authorized JavaScript origins for your production domain (for example, `https://freefireshop.vercel.app`) and any local development origin you use (for example, `http://localhost:3000`). No Google client secret is used by this Identity Services flow.
+2. Set `GOOGLE_CLIENT_ID` to the Web application client ID in the Vercel project environment variables.
+3. Generate a random `AUTH_SESSION_SECRET` with at least 32 characters and store it only in Vercel environment variables. Do not commit it or paste it into source files.
+4. Redeploy. The header will render Google's official sign-in control only when both settings are present.
+
+The backend verifies the Google ID-token signature against Google's published keys and checks its issuer, audience, expiry, verified-email claim, nonce and same-origin CSRF token. A successful sign-in creates an encrypted, HTTP-only, secure-in-production session cookie. The demo does not save a Google profile to PostgreSQL or link it to game credentials. A signed-in account is not proof of a paid order.
+
+For local development, configure the same variables in an untracked local `.env` file. The committed `.env.example` contains placeholders only.
+
+## Demo payment methods
+
+The checkout lists EDAHABIA, CIB, Visa, Mastercard, PayPal and BaridiMob so the checkout flow can be reviewed. **Every option remains a demonstration choice only.** The API records the selected method name with the demo order; it never collects card numbers, CVVs, PayPal credentials, BaridiMob credentials, transfer slips or one-time codes.
+
+Chargily's current developer information advertises EDAHABIA and CIB support; its business page lists Visa and Mastercard as coming soon. This repository does not integrate Chargily or any other payment processor yet. PayPal merchant eligibility and settlement must be confirmed with PayPal for the actual business account. BaridiMob is shown as a future manual-review option only: this demo does not display a payment number, request a transfer, accept a receipt or confirm a payment.
+
+Before connecting any real payment provider, the adult business owner must verify merchant eligibility, legal authority to sell the goods, fees, settlement, refunds, privacy requirements and official provider documentation. Real payment collection and item fulfilment are intentionally disabled in this project.
+
 ## Local API endpoints
 
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
 | `/api/health` | GET | Health and explicit demo-only status |
 | `/api/products` | GET | Active catalog |
+| `/api/auth/google` | GET / POST | Optional Google sign-in bootstrap, verified login and logout |
 | `/api/orders` | POST | Idempotent demo receipt; no payment or fulfillment |
 | `/api/admin/overview` | GET | Protected admin summary on the self-hosted server |
 | `/api/admin/products` | GET / POST | Protected product administration on the self-hosted server |

@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const catalogSeed = require('./catalog.js');
+const { handleGoogleAuth } = require('./lib/google-auth.js');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
@@ -281,20 +282,25 @@ async function createDemoOrder(req, res) {
     const key = getIdempotencyKey(req);
     const products = await listProducts();
     const normalized = validateOrderItems(payload.items, products);
-    const requestHash = crypto.createHash('sha256').update(JSON.stringify(normalized.items)).digest('hex');
+    const paymentMethod = String(payload.paymentMethod || 'edahabia');
+    if (!['cib', 'edahabia', 'visa', 'mastercard', 'paypal', 'baridimob'].includes(paymentMethod)) {
+      return sendJson(res, 400, { ok: false, error: 'وسيلة الدفع التجريبية غير صالحة.' });
+    }
+    const requestHash = crypto.createHash('sha256')
+      .update(JSON.stringify({ items: normalized.items, paymentMethod })).digest('hex');
 
     let order;
     if (pool) {
       const inserted = await pool.query(
-        `INSERT INTO demo_orders (reference, idempotency_key, request_hash, status, currency, total_dzd, item_count, items_json)
-         VALUES ($1,$2,$3,'DEMO_ONLY_NOT_FULFILLED','DZD',$4,$5,$6::jsonb)
+        `INSERT INTO demo_orders (reference, idempotency_key, request_hash, status, currency, payment_method, total_dzd, item_count, items_json)
+         VALUES ($1,$2,$3,'DEMO_ONLY_NOT_FULFILLED','DZD',$4,$5,$6,$7::jsonb)
          ON CONFLICT (idempotency_key) DO NOTHING
-         RETURNING reference, status, currency, total_dzd, item_count, items_json, created_at`,
-        [crypto.randomBytes(5).toString('hex').toUpperCase(), key, requestHash, normalized.total, normalized.count, JSON.stringify(normalized.items)]
+         RETURNING reference, status, currency, payment_method, total_dzd, item_count, items_json, created_at`,
+        [crypto.randomBytes(5).toString('hex').toUpperCase(), key, requestHash, paymentMethod, normalized.total, normalized.count, JSON.stringify(normalized.items)]
       );
       if (inserted.rows.length) order = mapOrderRow(inserted.rows[0]);
       else {
-        const prior = await pool.query('SELECT reference, request_hash, status, currency, total_dzd, item_count, items_json, created_at FROM demo_orders WHERE idempotency_key = $1', [key]);
+        const prior = await pool.query('SELECT reference, request_hash, status, currency, payment_method, total_dzd, item_count, items_json, created_at FROM demo_orders WHERE idempotency_key = $1', [key]);
         const row = prior.rows[0];
         if (!row || row.request_hash !== requestHash) {
           return sendJson(res, 409, { ok: false, error: 'مفتاح الطلب مستخدم لطلب مختلف. ابدأ معاينة جديدة.' });
@@ -311,6 +317,7 @@ async function createDemoOrder(req, res) {
           reference: crypto.randomBytes(5).toString('hex').toUpperCase(),
           status: 'DEMO_ONLY_NOT_FULFILLED',
           currency: 'DZD',
+          paymentMethod,
           total: normalized.total,
           itemCount: normalized.count,
           items: normalized.items,
@@ -333,6 +340,7 @@ function mapOrderRow(row) {
     reference: row.reference,
     status: row.status,
     currency: row.currency,
+    paymentMethod: row.payment_method || 'edahabia',
     total: Number(row.total_dzd),
     itemCount: Number(row.item_count),
     items: typeof row.items_json === 'string' ? JSON.parse(row.items_json) : row.items_json,
@@ -345,6 +353,7 @@ function publicOrder(order) {
     reference: order.reference,
     status: order.status,
     currency: order.currency,
+    paymentMethod: order.paymentMethod || 'edahabia',
     total: order.total,
     itemCount: order.itemCount,
     items: order.items,
@@ -419,7 +428,7 @@ async function adminApi(req, res, url) {
 
   if (req.method === 'GET' && url.pathname === '/api/admin/orders') {
     if (pool) {
-      const result = await pool.query('SELECT reference, status, currency, total_dzd, item_count, items_json, created_at FROM demo_orders ORDER BY created_at DESC LIMIT 100');
+      const result = await pool.query('SELECT reference, status, currency, payment_method, total_dzd, item_count, items_json, created_at FROM demo_orders ORDER BY created_at DESC LIMIT 100');
       return sendJson(res, 200, { ok: true, orders: result.rows.map(mapOrderRow).map(publicOrder) });
     }
     return sendJson(res, 200, { ok: true, orders: memoryOrders.map(publicOrder) });
@@ -502,11 +511,12 @@ function applySecurityHeaders(res) {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   res.setHeader('Content-Security-Policy', [
     "default-src 'self'",
-    "script-src 'self'",
-    "style-src 'self'",
+    "script-src 'self' https://accounts.google.com/gsi/client",
+    "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data:",
-    "img-src 'self' data:",
-    "connect-src 'self'",
+    "img-src 'self' data: https://*.googleusercontent.com",
+    "connect-src 'self' https://accounts.google.com",
+    "frame-src https://accounts.google.com",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -560,6 +570,8 @@ function createServer() {
         return res.end();
       }
     }
+
+    if (url.pathname === '/api/auth/google') return handleGoogleAuth(req, res);
 
     if (url.pathname === '/api/health' && req.method === 'GET') {
       let database = 'not-configured';

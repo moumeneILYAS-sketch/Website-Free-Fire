@@ -26,7 +26,11 @@
     activeProduct: null,
     previousFocus: null,
     idempotencyKey: null,
-    toastTimer: null
+    toastTimer: null,
+    googleEnabled: false,
+    googleCsrfToken: '',
+    googleNonce: '',
+    googleUser: null
   };
 
   function escapeHtml(value) {
@@ -66,6 +70,171 @@
     node.classList.add('show');
     window.clearTimeout(state.toastTimer);
     state.toastTimer = window.setTimeout(() => node.classList.remove('show'), 3100);
+  }
+
+  function updateGoogleAccountUI() {
+    const fallback = $('googleSignInFallback');
+    const slot = $('googleSignInSlot');
+    const controls = $('googleUserControls');
+    const hint = $('googleAuthHint');
+    const name = $('googleAccountName');
+    if (state.googleUser) {
+      fallback.hidden = true;
+      slot.hidden = true;
+      controls.hidden = false;
+      name.textContent = state.googleUser.name || state.googleUser.email || 'حساب Google';
+      hint.textContent = 'تم تسجيل الدخول';
+      return;
+    }
+    controls.hidden = true;
+    if (state.googleEnabled) {
+      fallback.hidden = true;
+      slot.hidden = false;
+      hint.textContent = 'تسجيل آمن عبر Google';
+    } else {
+      slot.hidden = true;
+      fallback.hidden = false;
+      fallback.disabled = true;
+      fallback.title = 'يلزم إعداد GOOGLE_CLIENT_ID و AUTH_SESSION_SECRET في الاستضافة';
+      hint.textContent = 'Google قيد الإعداد';
+    }
+  }
+
+  function loadGoogleIdentityScript() {
+    if (window.google && window.google.accounts && window.google.accounts.id) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const existing = document.getElementById('google-identity-services');
+      if (existing) {
+        existing.addEventListener('load', resolve, { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.id = 'google-identity-services';
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('تعذر تحميل خدمة Google.'));
+      document.head.appendChild(script);
+    });
+  }
+
+  async function bootstrapGoogleAuth() {
+    try {
+      const response = await fetch('/api/auth/google', {
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin'
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || 'تعذر إعداد تسجيل Google.');
+      state.googleEnabled = Boolean(data.enabled);
+      state.googleCsrfToken = data.csrfToken || '';
+      state.googleNonce = data.nonce || '';
+      state.googleUser = data.user || null;
+      updateGoogleAccountUI();
+      if (!state.googleEnabled || state.googleUser) return;
+
+      await loadGoogleIdentityScript();
+      if (!window.google || !window.google.accounts || !window.google.accounts.id) {
+        throw new Error('خدمة Google غير متاحة في هذا المتصفح.');
+      }
+      window.google.accounts.id.initialize({
+        client_id: data.clientId,
+        nonce: state.googleNonce,
+        callback: handleGoogleCredential,
+        auto_select: false,
+        ux_mode: 'popup'
+      });
+      const slot = $('googleSignInSlot');
+      slot.textContent = '';
+      window.google.accounts.id.renderButton(slot, {
+        type: 'standard',
+        theme: 'filled_blue',
+        size: 'medium',
+        text: 'signin_with',
+        shape: 'pill',
+        logo_alignment: 'left',
+        locale: 'ar',
+        width: 150
+      });
+    } catch (error) {
+      $('googleAuthHint').textContent = error.message || 'تسجيل Google غير متاح الآن';
+      if (!state.googleUser) {
+        $('googleSignInFallback').hidden = false;
+        $('googleSignInFallback').disabled = true;
+        $('googleSignInSlot').hidden = true;
+      }
+    }
+  }
+
+  async function handleGoogleCredential(result) {
+    if (!result || typeof result.credential !== 'string' || !state.googleCsrfToken) {
+      return toast('تعذر بدء جلسة Google. حدّث الصفحة وحاول مجددًا.', 'error');
+    }
+    try {
+      const response = await fetch('/api/auth/google', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-BlueDrop-CSRF': state.googleCsrfToken
+        },
+        body: JSON.stringify({ credential: result.credential })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || 'تعذر تسجيل الدخول.');
+      state.googleUser = data.user;
+      toast('تم تسجيل الدخول بحساب Google.');
+      await bootstrapGoogleAuth();
+    } catch (error) {
+      toast(error.message || 'تعذر التحقق من حساب Google.', 'error');
+      await bootstrapGoogleAuth();
+    }
+  }
+
+  async function signOutGoogle() {
+    if (!state.googleCsrfToken) return bootstrapGoogleAuth();
+    try {
+      const response = await fetch('/api/auth/google', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-BlueDrop-CSRF': state.googleCsrfToken
+        },
+        body: JSON.stringify({ action: 'logout' })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || 'تعذر تسجيل الخروج.');
+      state.googleUser = null;
+      toast('تم تسجيل الخروج.');
+      await bootstrapGoogleAuth();
+    } catch (error) {
+      toast(error.message || 'تعذر تسجيل الخروج.', 'error');
+    }
+  }
+
+  const PAYMENT_METHOD_NOTICES = Object.freeze({
+    edahabia: 'البطاقة الذهبية غير متصلة بعد. سيتم ربط بوابة معتمدة لاحقًا؛ هذا الاختيار تجريبي فقط.',
+    cib: 'بطاقة CIB غير متصلة بعد. سيتم ربط بوابة معتمدة لاحقًا؛ لا تفتح هذه المعاينة صفحة دفع.',
+    visa: 'Visa غير مفعّلة. يجب تأكيد أهلية التاجر ودعم مزود الدفع قبل تفعيلها. لا تدخل بيانات البطاقة.',
+    mastercard: 'Mastercard غير مفعّلة. يجب تأكيد أهلية التاجر ودعم مزود الدفع قبل تفعيلها. لا تدخل بيانات البطاقة.',
+    paypal: 'PayPal غير مربوط بحساب تاجر. هذا الاختيار للمعاينة فقط ولا يتم تحويل أموال.',
+    baridimob: 'BaridiMob: لن نطلب تحويلًا أو إيصالًا الآن. لاحقًا يمكن عرض تعليمات رسمية ومراجعة يدوية بعد التحقق من وصول الدفعة.'
+  });
+
+  function selectedPaymentMethod() {
+    return document.querySelector('input[name="paymentMethod"]:checked')?.value || 'edahabia';
+  }
+
+  function updatePaymentMethodNotice() {
+    const method = selectedPaymentMethod();
+    const notice = $('paymentMethodNotice');
+    notice.dataset.method = method;
+    notice.textContent = PAYMENT_METHOD_NOTICES[method] || 'طريقة دفع تجريبية فقط.';
   }
 
   function currentProducts() {
@@ -322,6 +491,7 @@
     event.preventDefault();
     const form = event.currentTarget;
     const playerId = $('playerId').value.trim();
+    const paymentMethod = selectedPaymentMethod();
     const totals = cartTotals();
     if (totals.count < 1) {
       closeOverlays();
@@ -349,6 +519,7 @@
         },
         body: JSON.stringify({
           playerId,
+          paymentMethod,
           items: Object.entries(state.cart).map(([id, quantity]) => ({ productId: Number(id), quantity }))
         })
       });
@@ -361,6 +532,7 @@
       persistCart();
       renderCart();
       form.reset();
+      updatePaymentMethodNotice();
       closeOverlays();
       toast(`تم إنشاء طلب تجريبي ${reference}. لم يتم الدفع أو الشحن.`);
     } catch (error) {
@@ -417,6 +589,8 @@
     openOverlay('checkout');
   });
   $('checkoutForm').addEventListener('submit', submitDemoOrder);
+  document.querySelectorAll('input[name="paymentMethod"]').forEach(input => input.addEventListener('change', updatePaymentMethodNotice));
+  $('googleSignOut').addEventListener('click', signOutGoogle);
   $('playerId').addEventListener('input', () => $('playerId').setCustomValidity(''));
   $('dialogAddToCart').addEventListener('click', () => {
     if (state.activeProduct) addToCart(state.activeProduct.id);
@@ -438,4 +612,6 @@
   renderProducts();
   renderCart();
   loadCatalog();
+  updatePaymentMethodNotice();
+  bootstrapGoogleAuth();
 })();
