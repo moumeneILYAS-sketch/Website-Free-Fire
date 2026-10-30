@@ -1,12 +1,12 @@
 {
   "name": "bluedrop-storefront",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
-  "description": "BlueDrop Arabic RTL storefront demo with Vercel static assets and serverless API routes.",
+  "description": "BlueDrop Arabic RTL storefront demo with Google identity and demo-only payment selection.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js && node --check app.js && node --check catalog.js && node --check scripts/migrate.js && node --check admin/admin.js && node --check scripts/prepare-vercel.js && node --check lib/vercel-api.js && node --check api/products.js && node --check api/health.js && node --check api/orders.js",
+    "check": "node --check server.js && node --check app.js && node --check catalog.js && node --check scripts/migrate.js && node --check admin/admin.js && node --check scripts/prepare-vercel.js && node --check lib/vercel-api.js && node --check lib/google-auth.js && node --check api/auth/google.js && node --check api/products.js && node --check api/health.js && node --check api/orders.js",
     "test": "node --test",
     "vercel-build": "node scripts/prepare-vercel.js",
     "db:migrate": "node scripts/migrate.js"
