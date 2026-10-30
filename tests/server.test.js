@@ -81,6 +81,39 @@ test('home page serves the storefront and security headers', async () => {
   });
 });
 
+test('Google sign-in endpoint is disabled unless the owner configures it', async () => {
+  const previousClientId = process.env.GOOGLE_CLIENT_ID;
+  const previousSecret = process.env.AUTH_SESSION_SECRET;
+  delete process.env.GOOGLE_CLIENT_ID;
+  delete process.env.AUTH_SESSION_SECRET;
+  try {
+    await withServer(async baseUrl => {
+      const response = await fetch(baseUrl + '/api/auth/google');
+      const data = await response.json();
+      assert.equal(response.status, 200);
+      assert.equal(data.ok, true);
+      assert.equal(data.enabled, false);
+      assert.equal(data.user, null);
+    });
+  } finally {
+    if (previousClientId === undefined) delete process.env.GOOGLE_CLIENT_ID;
+    else process.env.GOOGLE_CLIENT_ID = previousClientId;
+    if (previousSecret === undefined) delete process.env.AUTH_SESSION_SECRET;
+    else process.env.AUTH_SESSION_SECRET = previousSecret;
+  }
+});
+
+test('storefront exposes demo-only account and payment controls', async () => {
+  await withServer(async baseUrl => {
+    const html = await (await fetch(baseUrl + '/')).text();
+    assert.match(html, /googleSignInFallback/);
+    for (const method of ['edahabia', 'cib', 'visa', 'mastercard', 'paypal', 'baridimob']) {
+      assert.match(html, new RegExp('value="' + method + '"'));
+    }
+    assert.match(html, /لا تُحوّل أي مبلغ/);
+  });
+});
+
 test('health and products endpoints respond in memory demo mode', async () => {
   await withServer(async baseUrl => {
     const healthResponse = await fetch(baseUrl + '/api/health');
