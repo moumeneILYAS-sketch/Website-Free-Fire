@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { handleProducts, handleHealth, handleOrder } = require('../lib/vercel-api');
-const { handleGoogleAuth } = require('../lib/google-auth');
+const { handleGoogleAuth, encryptSession, decryptSession } = require('../lib/google-auth');
 
 function mockResponse() {
   return {
@@ -147,4 +147,15 @@ test('Google sign-in refuses a credential when OAuth is not configured', async (
     if (previousSessionSecret === undefined) delete process.env.AUTH_SESSION_SECRET;
     else process.env.AUTH_SESSION_SECRET = previousSessionSecret;
   }
+});
+
+test('Google account session cookie is encrypted and expires safely', () => {
+  const secret = 'test-only-session-secret-with-more-than-32-characters';
+  const user = { sub: 'google-subject', email: 'player@example.test', name: 'Demo User' };
+  const token = encryptSession(user, secret);
+  assert.notEqual(token, JSON.stringify(user));
+  assert.deepEqual(decryptSession(token, secret), user);
+  assert.equal(decryptSession(token, 'a-different-session-secret-that-is-long-enough'), null);
+  const tampered = token.slice(0, -1) + (token.endsWith('a') ? 'b' : 'a');
+  assert.equal(decryptSession(tampered, secret), null);
 });
