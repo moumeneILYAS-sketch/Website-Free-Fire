@@ -2,8 +2,9 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const { handleProducts, handleHealth, handleOrder } = require('../lib/vercel-api');
-const { handleGoogleAuth, encryptSession, decryptSession } = require('../lib/google-auth');
+const { handleGoogleAuth, encryptSession, decryptSession, verifyGoogleCredential } = require('../lib/google-auth');
 
 function mockResponse() {
   return {
@@ -158,4 +159,45 @@ test('Google account session cookie is encrypted and expires safely', () => {
   assert.equal(decryptSession(token, 'a-different-session-secret-that-is-long-enough'), null);
   const tampered = (token[0] === 'a' ? 'b' : 'a') + token.slice(1);
   assert.equal(decryptSession(tampered, secret), null);
+});
+
+test('Google ID-token verification checks an RS256 signature, audience and nonce', async () => {
+  const pair = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
+  const jwk = pair.publicKey.export({ format: 'jwk' });
+  const nonce = 'n'.repeat(40);
+  const now = Math.floor(Date.now() / 1000);
+  const header = { alg: 'RS256', kid: 'bluedrop-test-key', typ: 'JWT' };
+  const claims = {
+    iss: 'https://accounts.google.com',
+    aud: 'bluedrop-test-client',
+    exp: now + 300,
+    iat: now,
+    nonce,
+    email_verified: true,
+    email: 'demo@example.test',
+    sub: 'google-test-subject',
+    name: 'BlueDrop Test'
+  };
+  const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
+  const input = encode(header) + '.' + encode(claims);
+  const signature = crypto.sign('RSA-SHA256', Buffer.from(input), pair.privateKey).toString('base64url');
+  const token = input + '.' + signature;
+  const previousFetch = global.fetch;
+  global.fetch = async () => new Response(JSON.stringify({
+    keys: [{ kty: 'RSA', n: jwk.n, e: jwk.e, kid: 'bluedrop-test-key', alg: 'RS256', use: 'sig' }]
+  }), { status: 200, headers: { 'cache-control': 'max-age=60' } });
+  try {
+    const user = await verifyGoogleCredential(token, 'bluedrop-test-client', nonce);
+    assert.deepEqual(user, {
+      sub: 'google-test-subject',
+      email: 'demo@example.test',
+      name: 'BlueDrop Test'
+    });
+    await assert.rejects(
+      verifyGoogleCredential(token, 'bluedrop-test-client', 'x'.repeat(40)),
+      /nonce/
+    );
+  } finally {
+    global.fetch = previousFetch;
+  }
 });
