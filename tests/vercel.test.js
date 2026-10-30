@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { handleProducts, handleHealth, handleOrder } = require('../lib/vercel-api');
+const { handleGoogleAuth } = require('../lib/google-auth');
 
 function mockResponse() {
   return {
@@ -102,4 +103,48 @@ test('Vercel build output contains the home page and every referenced local asse
     fs.readFileSync(path.join(root, 'index.html'), 'utf8'),
     'public homepage must be built from the repository source'
   );
+});
+
+test('Google sign-in stays disabled until both owner environment values are configured', async () => {
+  const previousClientId = process.env.GOOGLE_CLIENT_ID;
+  const previousSessionSecret = process.env.AUTH_SESSION_SECRET;
+  delete process.env.GOOGLE_CLIENT_ID;
+  delete process.env.AUTH_SESSION_SECRET;
+  try {
+    const res = mockResponse();
+    await handleGoogleAuth({ method: 'GET', headers: {} }, res);
+    const data = parsed(res);
+    assert.equal(res.statusCode, 200);
+    assert.equal(data.ok, true);
+    assert.equal(data.enabled, false);
+    assert.equal(data.clientId, null);
+    assert.equal(data.user, null);
+  } finally {
+    if (previousClientId === undefined) delete process.env.GOOGLE_CLIENT_ID;
+    else process.env.GOOGLE_CLIENT_ID = previousClientId;
+    if (previousSessionSecret === undefined) delete process.env.AUTH_SESSION_SECRET;
+    else process.env.AUTH_SESSION_SECRET = previousSessionSecret;
+  }
+});
+
+test('Google sign-in refuses a credential when OAuth is not configured', async () => {
+  const previousClientId = process.env.GOOGLE_CLIENT_ID;
+  const previousSessionSecret = process.env.AUTH_SESSION_SECRET;
+  delete process.env.GOOGLE_CLIENT_ID;
+  delete process.env.AUTH_SESSION_SECRET;
+  try {
+    const res = mockResponse();
+    await handleGoogleAuth({
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: { credential: 'not-a-real-token' }
+    }, res);
+    assert.equal(res.statusCode, 503);
+    assert.equal(parsed(res).enabled, false);
+  } finally {
+    if (previousClientId === undefined) delete process.env.GOOGLE_CLIENT_ID;
+    else process.env.GOOGLE_CLIENT_ID = previousClientId;
+    if (previousSessionSecret === undefined) delete process.env.AUTH_SESSION_SECRET;
+    else process.env.AUTH_SESSION_SECRET = previousSessionSecret;
+  }
 });
