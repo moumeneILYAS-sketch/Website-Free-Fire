@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS products (
 );
 CREATE INDEX IF NOT EXISTS products_active_featured_idx ON products(active, featured, id);
 
--- Demonstration orders deliberately omit player IDs, passwords, payment details, and authentication codes.
+-- Demonstration orders deliberately omit player IDs, passwords, card credentials, transfer credentials, and authentication codes.
 -- This table is not a substitute for a real commerce/payment/fulfillment model.
 CREATE TABLE IF NOT EXISTS demo_orders (
   id BIGSERIAL PRIMARY KEY,
