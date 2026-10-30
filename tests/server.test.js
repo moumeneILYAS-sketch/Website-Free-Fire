@@ -102,6 +102,7 @@ test('demo order validates payload and never echoes the player id', async () => 
   await withServer(async baseUrl => {
     const response = await postJson(baseUrl, '/api/orders', {
       playerId: '12345678',
+      paymentMethod: 'baridimob',
       items: [{ productId: 1, quantity: 2, price: 1 }]
     }, { 'Idempotency-Key': 'test-order-key-01' });
     const result = await response.json();
@@ -109,6 +110,7 @@ test('demo order validates payload and never echoes the player id', async () => 
     assert.equal(result.ok, true);
     assert.equal(result.order.total, 500);
     assert.equal(result.order.status, 'DEMO_ONLY_NOT_FULFILLED');
+    assert.equal(result.order.paymentMethod, 'baridimob');
     assert.equal(Object.hasOwn(result.order, 'playerId'), false);
     assert.equal(JSON.stringify(result).includes('12345678'), false);
   });
@@ -116,13 +118,17 @@ test('demo order validates payload and never echoes the player id', async () => 
 
 test('idempotency returns the same demo order for a repeated matching request', async () => {
   await withServer(async baseUrl => {
-    const body = { playerId: '', items: [{ productId: 2, quantity: 1 }] };
+    const body = { playerId: '', paymentMethod: 'edahabia', items: [{ productId: 2, quantity: 1 }] };
     const headers = { 'Idempotency-Key': 'test-idempotency-02' };
     const first = await (await postJson(baseUrl, '/api/orders', body, headers)).json();
     const secondResponse = await postJson(baseUrl, '/api/orders', body, headers);
     const second = await secondResponse.json();
     assert.equal(secondResponse.status, 201);
     assert.equal(second.order.reference, first.order.reference);
+    const changedMethod = await postJson(baseUrl, '/api/orders', {
+      ...body, paymentMethod: 'cib'
+    }, headers);
+    assert.equal(changedMethod.status, 409, 'idempotency must include the selected demo payment method');
   });
 });
 
