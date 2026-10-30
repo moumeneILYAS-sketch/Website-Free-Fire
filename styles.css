@@ -529,3 +529,39 @@ img { max-width: 100%; display: block; }
 .product-card:nth-child(7) { animation-delay: 270ms; }
 .product-card:nth-child(8) { animation-delay: 315ms; }
 .product-card:nth-child(9) { animation-delay: 360ms; }
+
+
+/* Google account controls */
+.google-auth-wrap { display:flex; align-items:center; gap:8px; min-width:0; }
+.google-signin-fallback, .google-user-controls { min-height:36px; display:flex; align-items:center; justify-content:center; gap:8px; padding:6px 10px; border:1px solid #355579; border-radius:10px; background:#102541; color:#e9f5ff; font-size:10px; font-weight:800; white-space:nowrap; }
+.google-signin-fallback:disabled { opacity:.75; cursor:not-allowed; }
+.google-mark { font:900 17px Arial,sans-serif; background:conic-gradient(from -45deg,#4285f4 0 25%,#34a853 25% 50%,#fbbc05 50% 75%,#ea4335 75%); color:transparent; background-clip:text; -webkit-background-clip:text; }
+.google-signin-slot { min-width:120px; min-height:38px; }
+.google-user-controls { max-width:205px; }
+.google-account-name { max-width:116px; overflow:hidden; text-overflow:ellipsis; direction:rtl; }
+.google-signout { padding:3px 7px; border:1px solid #476789; border-radius:7px; background:#0b1b32; color:#a9d6ff; font-size:9px; }
+.google-auth-hint { color:#7189a9; font-size:8px; white-space:nowrap; }
+
+/* Demo-only payment method selector */
+.payment-fieldset { min-width:0; margin:18px 0 0; padding:0; border:0; }
+.payment-fieldset legend { margin-bottom:9px; color:#e6f2ff; font-size:11px; font-weight:800; }
+.payment-method-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.payment-method { position:relative; display:flex; flex-direction:column; gap:2px; min-height:83px; padding:10px 11px; border:1px solid #2b4769; border-radius:11px; background:#091a30; cursor:pointer; transition:border-color var(--motion-fast),background var(--motion-fast),box-shadow var(--motion-fast); }
+.payment-method:has(input:checked) { border-color:#58a9ef; background:linear-gradient(135deg,#12365a,#0c2039); box-shadow:0 0 0 2px rgb(54 141 255 / 12%); }
+.payment-method input { position:absolute; inset-block-start:10px; inset-inline-start:10px; width:15px; height:15px; margin:0; accent-color:#58a9ef; }
+.payment-method-name { padding-inline-end:19px; color:#eef7ff; font-size:10px; font-weight:800; }
+.payment-method small { color:#8199b7; font-size:8px; }
+.payment-method b { align-self:flex-start; margin-top:3px; padding:2px 6px; border-radius:20px; background:#302819; color:#f2d39a; font-size:7px; font-weight:700; }
+.payment-method-notice { margin:10px 0 0; padding:9px 10px; border:1px solid #304a69; border-radius:9px; background:#0a1b30; color:#9db4d0; font-size:9px; line-height:1.9; }
+.payment-method-notice[data-method="baridimob"] { border-color:#705b31; color:#f3d9a2; }
+@media (max-width: 900px) {
+  .google-auth-hint { display:none; }
+  .google-auth-wrap { gap:4px; }
+}
+@media (max-width: 600px) {
+  .google-signin-fallback, .google-user-controls { min-height:32px; padding:4px 7px; font-size:9px; }
+  .google-signin-slot { min-width:108px; transform:scale(.9); transform-origin:right center; }
+  .google-account-name { max-width:75px; }
+  .payment-method-grid { gap:7px; }
+  .payment-method { min-height:78px; padding:8px; }
+}
