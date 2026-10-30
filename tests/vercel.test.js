@@ -156,6 +156,6 @@ test('Google account session cookie is encrypted and expires safely', () => {
   assert.notEqual(token, JSON.stringify(user));
   assert.deepEqual(decryptSession(token, secret), user);
   assert.equal(decryptSession(token, 'a-different-session-secret-that-is-long-enough'), null);
-  const tampered = token.slice(0, -1) + (token.endsWith('a') ? 'b' : 'a');
+  const tampered = (token[0] === 'a' ? 'b' : 'a') + token.slice(1);
   assert.equal(decryptSession(tampered, secret), null);
 });
