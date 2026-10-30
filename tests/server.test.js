@@ -179,6 +179,11 @@ test('order endpoint rejects invalid identifiers, missing keys, bad content type
     const invalidId = await postJson(baseUrl, '/api/orders', { playerId: '12', items: [{ productId: 1, quantity: 1 }] }, { 'Idempotency-Key': 'test-invalid-id-04' });
     assert.equal(invalidId.status, 400);
 
+    const invalidMethod = await postJson(baseUrl, '/api/orders', {
+      paymentMethod: 'unknown', items: [{ productId: 1, quantity: 1 }]
+    }, { 'Idempotency-Key': 'test-invalid-payment-method-07' });
+    assert.equal(invalidMethod.status, 400);
+
     const missingKey = await postJson(baseUrl, '/api/orders', { items: [{ productId: 1, quantity: 1 }] });
     assert.equal(missingKey.status, 400);
 
