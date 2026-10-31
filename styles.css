@@ -762,3 +762,20 @@ img { max-width: 100%; display: block; }
   .wallet-summary { width:33px; height:33px; min-height:33px; }
   .wallet-dropdown-panel { width:min(252px, calc(100vw - 30px)); }
 }
+
+
+/* Multilingual storefront language selector */
+.language-switcher { display:inline-flex; align-items:center; gap:5px; min-height:34px; padding:4px 7px; border:1px solid #284765; border-radius:9px; background:#0b1e35; color:#bfe5ff; }
+.language-switcher > span { font-size:15px; line-height:1; }
+.language-switcher select { max-width:95px; border:0; outline:0; background:transparent; color:#e9f5ff; font:700 9px "Segoe UI",Tahoma,Arial,sans-serif; cursor:pointer; }
+.language-switcher option { background:#0b1e35; color:#e9f5ff; }
+html[dir="ltr"] body { text-align:initial; }
+html[dir="ltr"] .text-link span { transform:none; }
+html[dir="ltr"] .primary-nav { direction:ltr; }
+html[dir="ltr"] .cart-drawer, html[dir="ltr"] .checkout-dialog { direction:ltr; text-align:left; }
+html[dir="ltr"] .product-dialog { direction:ltr; }
+html[dir="ltr"] .product-card, html[dir="ltr"] .faq-list, html[dir="ltr"] .benefit-card { text-align:left; }
+html[dir="ltr"] .category-card { text-align:left; }
+html[dir="ltr"] .site-info-grid > div { text-align:left; }
+html[dir="ltr"] .site-footer .footer-inner { direction:ltr; }
+@media (max-width:600px) { .language-switcher { min-height:31px; padding:3px 5px; gap:3px; } .language-switcher select { max-width:76px; font-size:8px; } }
