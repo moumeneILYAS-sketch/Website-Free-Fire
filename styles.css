@@ -567,128 +567,49 @@ img { max-width: 100%; display: block; }
 }
 
 
-/* Keep the Google Identity button wrapper transparent on the dark header. */
-.google-auth-wrap,
-.google-signin-slot,
-.google-signin-slot > div,
-.google-signin-slot iframe {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+
+
+/* Google sign-in: keep Google's own icon iframe intact and align it with header controls. */
+.google-auth-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-width: 0;
+  min-height: 42px;
 }
 .google-signin-slot {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 !important;
-  overflow: hidden;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
   vertical-align: middle;
+  line-height: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: none;
+  transform: none;
 }
-.google-signin-slot iframe {
-  display: block;
-  color-scheme: dark;
-}
-
-
-/* Crop the transparent padding area around Google's cross-origin button iframe. */
-.google-signin-slot {
-  box-sizing: content-box !important;
-  width: 208px !important;
-  height: 32px !important;
-  min-width: 208px !important;
-  min-height: 32px !important;
-  max-width: 208px !important;
-  max-height: 32px !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-.google-signin-slot > div {
-  width: 228px !important;
-  height: 44px !important;
-  min-width: 228px !important;
-  min-height: 44px !important;
-  transform: translate(-10px, -6px) !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-.google-signin-slot iframe {
-  display: block !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+/* The Google icon is self-explanatory; hide the extra tiny helper label. */
+.google-auth-hint {
+  display: none !important;
 }
 @media (max-width: 600px) {
-  .google-signin-slot {
-    width: 208px !important;
-    min-width: 208px !important;
-    height: 32px !important;
-    min-height: 32px !important;
+  .google-auth-wrap {
+    min-height: 40px;
   }
-  .google-signin-slot > div {
-    transform: translate(-10px, -6px) !important;
-  }
-}
-
-
-/* Google sign-in: icon-only circular button, with no rectangular wrapper. */
-.google-auth-wrap {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 0 !important;
-  min-width: 0 !important;
-}
-.google-signin-slot {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 42px !important;
-  height: 42px !important;
-  min-width: 42px !important;
-  min-height: 42px !important;
-  max-width: 42px !important;
-  max-height: 42px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: visible !important;
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 50% !important;
-  box-shadow: none !important;
-}
-.google-signin-slot > div {
-  display: block !important;
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px !important;
-  min-height: 40px !important;
-  max-width: 40px !important;
-  max-height: 40px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  transform: none !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-.google-signin-slot iframe {
-  display: block !important;
-  max-width: 40px !important;
-  border: 0 !important;
-  border-radius: 50% !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-@media (max-width: 600px) {
   .google-signin-slot {
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    transform: none;
   }
 }
