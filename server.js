@@ -6,6 +6,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const catalogSeed = require('./catalog.js');
 const { handleGoogleAuth } = require('./lib/google-auth.js');
+const commissionPolicy = require('./commission.js');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
@@ -46,6 +47,7 @@ const STATIC_FILES = new Map([
   ['/app.js', path.join(ROOT, 'app.js')],
   ['/catalog.js', path.join(ROOT, 'catalog.js')],
   ['/i18n.js', path.join(ROOT, 'i18n.js')],
+  ['/commission.js', path.join(ROOT, 'commission.js')],
   ['/favicon.svg', path.join(ROOT, 'public', 'favicon.svg')],
   ['/admin/admin.css', path.join(ROOT, 'admin', 'admin.css')],
   ['/admin/admin.js', path.join(ROOT, 'admin', 'admin.js')]
@@ -111,11 +113,12 @@ async function listProducts() {
   return result.rows.map(normalizeProduct);
 }
 
-function validateOrderItems(input, products) {
+function validateOrderItems(input, products, options = {}) {
   if (!Array.isArray(input) || input.length < 1 || input.length > 10) {
     throw Object.assign(new Error('اختر من عنصر واحد إلى 10 عناصر مختلفة.'), { statusCode: 400 });
   }
-
+  const countryCode = commissionPolicy.normalizeCountryCode(options.countryCode);
+  const commissionPercent = commissionPolicy.resolvePercent({ countryCode });
   const merged = new Map();
   for (const entry of input) {
     const productId = Number(entry && entry.productId);
@@ -124,35 +127,31 @@ function validateOrderItems(input, products) {
       throw Object.assign(new Error('معرّف المنتج أو الكمية غير صالح.'), { statusCode: 400 });
     }
     const product = products.find(item => Number(item.id) === productId && item.active !== false);
-    if (!product) {
-      throw Object.assign(new Error('أحد المنتجات غير متاح.'), { statusCode: 400 });
-    }
-    if (product.purchasable === false) {
-      throw Object.assign(new Error('هذه البطاقة للعرض فقط ولا يمكن طلبها حاليًا.'), { statusCode: 400 });
-    }
+    if (!product) throw Object.assign(new Error('أحد المنتجات غير متاح.'), { statusCode: 400 });
+    if (product.purchasable === false) throw Object.assign(new Error('هذه البطاقة للعرض فقط ولا يمكن طلبها حاليًا.'), { statusCode: 400 });
     const combined = (merged.get(productId) || 0) + quantity;
-    if (combined > 20) {
-      throw Object.assign(new Error('الحد الأقصى التجريبي هو 20 من كل عنصر.'), { statusCode: 400 });
-    }
+    if (combined > 20) throw Object.assign(new Error('الحد الأقصى التجريبي هو 20 من كل عنصر.'), { statusCode: 400 });
     merged.set(productId, combined);
   }
-
   const items = [...merged.entries()].map(([productId, quantity]) => {
     const product = products.find(item => Number(item.id) === productId);
+    const unitPrice = Number(product.price);
+    const lineSubtotal = unitPrice * quantity;
+    const quote = commissionPolicy.calculate(lineSubtotal, { countryCode });
     return {
-      productId,
-      name: product.name,
-      unitPrice: Number(product.price),
-      quantity,
-      lineTotal: Number(product.price) * quantity
+      productId, name: product.name, unitPrice, quantity,
+      lineSubtotal, lineCommission: quote.commissionAmount,
+      commissionPercent: quote.commissionPercent, countryCode, lineTotal: quote.finalPrice
     };
   });
-  const total = items.reduce((sum, item) => sum + item.lineTotal, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.lineSubtotal, 0);
+  const serviceFee = items.reduce((sum, item) => sum + item.lineCommission, 0);
+  const total = subtotal + serviceFee;
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
   if (!Number.isSafeInteger(total) || total < 1 || !Number.isSafeInteger(count)) {
     throw Object.assign(new Error('تعذر حساب المجموع التجريبي.'), { statusCode: 400 });
   }
-  return { items, total, count };
+  return { items, subtotal, serviceFee, serviceFeePercent: commissionPercent, total, count, countryCode };
 }
 
 function readJson(req) {
@@ -285,13 +284,14 @@ async function createDemoOrder(req, res) {
     // The player ID is deliberately not persisted or returned. This is not a fulfillment service.
     const key = getIdempotencyKey(req);
     const products = await listProducts();
-    const normalized = validateOrderItems(payload.items, products);
+    const countryCode = commissionPolicy.normalizeCountryCode(payload.countryCode);
+    const normalized = validateOrderItems(payload.items, products, { countryCode });
     const paymentMethod = String(payload.paymentMethod || 'edahabia');
     if (!['cib', 'edahabia', 'visa', 'mastercard', 'paypal', 'baridimob'].includes(paymentMethod)) {
       return sendJson(res, 400, { ok: false, error: 'وسيلة الدفع التجريبية غير صالحة.' });
     }
     const requestHash = crypto.createHash('sha256')
-      .update(JSON.stringify({ items: normalized.items, paymentMethod })).digest('hex');
+      .update(JSON.stringify({ items: normalized.items, paymentMethod, countryCode })).digest('hex');
 
     let order;
     if (pool) {
@@ -323,6 +323,10 @@ async function createDemoOrder(req, res) {
           currency: 'DZD',
           paymentMethod,
           total: normalized.total,
+          subtotal: normalized.subtotal,
+          serviceFee: normalized.serviceFee,
+          serviceFeePercent: normalized.serviceFeePercent,
+          countryCode: normalized.countryCode,
           itemCount: normalized.count,
           items: normalized.items,
           createdAt: new Date().toISOString()
@@ -333,21 +337,34 @@ async function createDemoOrder(req, res) {
         if (idempotency.size > 1000) idempotency.delete(idempotency.keys().next().value);
       }
     }
-    return sendJson(res, 201, { ok: true, order: publicOrder(order), note: 'طلب تجريبي فقط: لا دفع ولا شحن.' });
+    return sendJson(res, 201, {
+      ok: true, order: publicOrder(order),
+      pricing: { countryCode: normalized.countryCode, subtotal: normalized.subtotal,
+        serviceFee: normalized.serviceFee, serviceFeePercent: normalized.serviceFeePercent,
+        total: normalized.total, currency: 'DZD' },
+      note: 'معاينة تجريبية فقط: لا دفع ولا شحن ولا إضافة رصيد.'
+    });
   } catch (error) {
     return sendJson(res, error.statusCode || 500, { ok: false, error: error.statusCode ? error.message : 'تعذر إنشاء الطلب التجريبي.' });
   }
 }
 
 function mapOrderRow(row) {
+  const items = typeof row.items_json === 'string' ? JSON.parse(row.items_json) : row.items_json;
+  const subtotal = (items || []).reduce((sum, item) => sum + Number(item.lineSubtotal ?? item.lineTotal ?? 0), 0);
+  const serviceFee = (items || []).reduce((sum, item) => sum + Number(item.lineCommission || 0), 0);
   return {
     reference: row.reference,
     status: row.status,
     currency: row.currency,
     paymentMethod: row.payment_method || 'edahabia',
     total: Number(row.total_dzd),
+    subtotal,
+    serviceFee,
+    serviceFeePercent: Number(items && items[0] && items[0].commissionPercent || 2),
+    countryCode: String(items && items[0] && items[0].countryCode || 'DZ'),
     itemCount: Number(row.item_count),
-    items: typeof row.items_json === 'string' ? JSON.parse(row.items_json) : row.items_json,
+    items,
     createdAt: new Date(row.created_at).toISOString()
   };
 }
@@ -361,6 +378,10 @@ function publicOrder(order) {
     total: order.total,
     itemCount: order.itemCount,
     items: order.items,
+    subtotal: Number(order.subtotal || 0),
+    serviceFee: Number(order.serviceFee || 0),
+    serviceFeePercent: Number(order.serviceFeePercent || 2),
+    countryCode: String(order.countryCode || 'DZ'),
     createdAt: order.createdAt
   };
 }
