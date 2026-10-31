@@ -685,6 +685,13 @@
   });
   $('checkoutForm').addEventListener('submit', submitDemoOrder);
   document.querySelectorAll('input[name="paymentMethod"]').forEach(input => input.addEventListener('change', updatePaymentMethodNotice));
+  $('bankLinkInfoButton').addEventListener('click', () => {
+    const info = $('bankLinkInfo');
+    const opening = info.hidden;
+    info.hidden = !opening;
+    $('bankLinkInfoButton').setAttribute('aria-expanded', String(opening));
+    $('bankLinkInfoButton').textContent = opening ? 'إخفاء شرح الربط' : 'كيف يعمل الربط الآمن؟';
+  });
   $('googleSignInFallback').addEventListener('click', startGoogleSignIn);
   $('googleSignOut').addEventListener('click', signOutGoogle);
   $('playerId').addEventListener('input', () => $('playerId').setCustomValidity(''));
