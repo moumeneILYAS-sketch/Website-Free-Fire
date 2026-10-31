@@ -132,7 +132,7 @@
   function walletMoney(amount, countryCode) {
     const config = WALLET_COUNTRIES[countryCode] || WALLET_COUNTRIES.DZ;
     try {
-      return new Intl.NumberFormat(config.locale, {
+      return new Intl.NumberFormat(activeLocale(), {
         style: 'currency', currency: config.currency, maximumFractionDigits: 2
       }).format(amount);
     } catch {
@@ -145,7 +145,7 @@
     const select = $('walletCountrySelect');
     if (select) select.value = state.walletCountry;
     $('walletBalance').textContent = '0';
-    $('walletBalance').title = `رصيد المحفظة: ${walletMoney(0, state.walletCountry)}`;
+    $('walletBalance').title = `${tr('رصيد المحفظة')}: ${walletMoney(0, state.walletCountry)}`;
     $('walletPanelBalance').textContent = walletMoney(0, state.walletCountry);
     $('walletCurrencyLabel').textContent = `${tr(config.name)} • ${config.currency}`;
     $('walletPaymentMethods').innerHTML = config.methods.map(method =>
@@ -406,10 +406,10 @@
       const priceNote = isOfficialDiamondTopup
         ? tr('سعر استرشادي • السعر النهائي لدى Garena')
         : isGiftCard
-          ? `قيمة اسمية • ${escapeHtml(product.regionLabel || 'منطقة محددة')}`
+          ? `${tr('قيمة اسمية •')} ${escapeHtml(tr(product.regionLabel || 'منطقة محددة'))}`
           : product.priceNote
-            ? escapeHtml(product.priceNote)
-            : 'سعر توضيحي';
+            ? escapeHtml(tr(product.priceNote))
+            : tr('سعر توضيحي');
       const cartButton = isOfficialDiamondTopup
         ? `<a class="add-button official-purchase-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" aria-label="فتح قناة Garena الرسمية لشحن ${name}" title="${tr('افتح PagoStore الرسمي')}">↗</a>`
         : product.purchasable === false
@@ -479,12 +479,12 @@
             <div class="cart-line-title">${name}</div>
             <div class="cart-line-price">${formatPrice(Number(product.price) * quantity)}</div>
             <div class="quantity-control">
-              <button type="button" data-qty="${product.id}" data-delta="-1" aria-label="تقليل كمية ${name}">−</button>
+              <button type="button" data-qty="${product.id}" data-delta="-1" aria-label="${tr('تقليل كمية')} ${name}">−</button>
               <span aria-label="الكمية">${quantity}</span>
-              <button type="button" data-qty="${product.id}" data-delta="1" aria-label="زيادة كمية ${name}">+</button>
+              <button type="button" data-qty="${product.id}" data-delta="1" aria-label="${tr('زيادة كمية')} ${name}">+</button>
             </div>
           </div>
-          <button class="remove-line" type="button" data-remove="${product.id}" aria-label="حذف ${name}" title="حذف">×</button>
+          <button class="remove-line" type="button" data-remove="${product.id}" aria-label="${tr('حذف')} ${name}" title="${tr('حذف')}">×</button>
         </div>`;
     }).join('');
 
@@ -539,7 +539,7 @@
     count.classList.remove('bump');
     void count.offsetWidth;
     count.classList.add('bump');
-    toast(`أُضيف «${product.name}» إلى السلة التجريبية.`);
+    toast(`${tr('تمت إضافة المنتج إلى السلة التجريبية.')}: ${tr(product.name)}`);
   }
 
   function showProduct(id) {
@@ -552,7 +552,7 @@
     const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
     $('dialogProductPrice').textContent = isGiftCard
       ? `${Number(product.faceValue)} ${product.faceCurrency}`
-      : (product.priceDisplay || formatPrice(Number(product.price)));
+      : (product.priceDisplay ? tr(product.priceDisplay) : formatPrice(Number(product.price)));
     const isOfficialDiamondTopup = product.category === 'diamonds';
     $('dialogPriceNote').textContent = isOfficialDiamondTopup
       ? tr('سعر استرشادي • السعر النهائي والباقة المتاحة يظهران في Garena')
@@ -669,7 +669,7 @@
       return toast('أضف عنصرًا واحدًا على الأقل قبل المعاينة.', 'error');
     }
     if (playerId && !/^[0-9]{6,16}$/.test(playerId)) {
-      $('playerId').setCustomValidity('أدخل من 6 إلى 16 رقمًا أو اترك الحقل فارغًا.');
+      $('playerId').setCustomValidity(tr('أدخل من 6 إلى 16 رقمًا أو اترك الحقل فارغًا.'));
       $('playerId').reportValidity();
       return;
     }
@@ -678,7 +678,7 @@
     const button = $('submitOrder');
     const previousText = button.textContent;
     button.disabled = true;
-    button.textContent = 'جارٍ إنشاء المعاينة…';
+    button.textContent = tr('جارٍ إنشاء المعاينة…');
     if (!state.idempotencyKey) state.idempotencyKey = makeIdempotencyKey();
     try {
       const response = await fetch('/api/orders', {
@@ -705,7 +705,7 @@
       form.reset();
       updatePaymentMethodNotice();
       closeOverlays();
-      toast(`تم إنشاء طلب تجريبي ${reference}. لم يتم الدفع أو الشحن.`);
+      toast(`${tr('تم إنشاء طلب تجريبي')} ${reference}. ${tr('لم يتم الدفع أو الشحن.')}`);
     } catch (error) {
       // Keep the idempotency key for a safe retry after network errors.
       toast(error.message || 'تعذر الاتصال بالخادم. جرّب مرة أخرى.', 'error');
@@ -750,7 +750,7 @@
       delete state.cart[id];
       state.idempotencyKey = null;
       renderCart();
-      toast(product ? `تم حذف «${product.name}» من السلة.` : 'تم حذف المنتج من السلة.');
+      toast(product ? `${tr('تم حذف المنتج من السلة.')}: ${tr(product.name)}` : 'تم حذف المنتج من السلة.');
       return;
     }
 
@@ -810,7 +810,7 @@
     const opening = info.hidden;
     info.hidden = !opening;
     $('bankLinkInfoButton').setAttribute('aria-expanded', String(opening));
-    $('bankLinkInfoButton').textContent = opening ? 'إخفاء شرح الربط' : 'كيف يعمل الربط الآمن؟';
+    $('bankLinkInfoButton').textContent = tr(opening ? 'إخفاء شرح الربط' : 'كيف يعمل الربط الآمن؟');
   });
   $('googleSignInFallback').addEventListener('click', startGoogleSignIn);
   $('googleSignOut').addEventListener('click', signOutGoogle);
