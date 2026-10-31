@@ -3,7 +3,7 @@
 
   const CATEGORY_LABELS = Object.freeze({
     diamonds: 'الجواهر',
-    codes: 'الأكواد',
+    codes: 'الأكواد وبطاقات الهدايا',
     skins: 'السكنات',
     emotes: 'الرقصات'
   });
@@ -270,7 +270,16 @@
       const badgeType = ['hot', 'rare'].includes(product.badgeType) ? product.badgeType : '';
       const category = escapeHtml(CATEGORY_LABELS[product.category] || 'منتج');
       const description = escapeHtml(product.description);
-      const price = formatPrice(Number(product.price));
+      const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
+      const price = isGiftCard
+        ? `${Number(product.faceValue)} ${escapeHtml(product.faceCurrency)}`
+        : formatPrice(Number(product.price));
+      const priceNote = isGiftCard
+        ? `قيمة اسمية • ${escapeHtml(product.regionLabel || 'منطقة محددة')}`
+        : 'سعر توضيحي';
+      const cartButton = product.purchasable === false
+        ? `<button class="add-button" type="button" disabled aria-label="${name} — غير متاح للشراء" title="بطاقة للعرض فقط">—</button>`
+        : `<button class="add-button" type="button" data-add="${id}" aria-label="إضافة ${name} إلى السلة" title="أضف إلى السلة">+</button>`;
       return `
         <article class="product-card stagger-${Math.min(index, 8)}">
           <div class="product-visual category-${escapeHtml(product.category)}">
@@ -283,10 +292,10 @@
             <h3 class="product-title">${name}</h3>
             <p class="product-description">${description}</p>
             <div class="product-footer">
-              <div class="product-price"><strong>${price}</strong><small>سعر توضيحي</small></div>
+              <div class="product-price"><strong>${price}</strong><small>${priceNote}</small></div>
               <div class="product-actions">
                 <button class="details-button" type="button" data-details="${id}" aria-label="تفاصيل ${name}" title="التفاصيل">↗</button>
-                <button class="add-button" type="button" data-add="${id}" aria-label="إضافة ${name} إلى السلة" title="أضف إلى السلة">+</button>
+                ${cartButton}
               </div>
             </div>
           </div>
@@ -302,7 +311,7 @@
 
   function cartTotals() {
     return Object.entries(state.cart).reduce((total, [id, quantity]) => {
-      const product = state.products.find((item) => Number(item.id) === Number(id) && item.active !== false);
+      const product = state.products.find((item) => Number(item.id) === Number(id) && item.active !== false && item.purchasable !== false);
       if (product && Number.isSafeInteger(quantity) && quantity > 0) {
         total.count += quantity;
         total.amount += Number(product.price) * quantity;
@@ -314,7 +323,7 @@
   function renderCart() {
     // Remove items that no longer exist or are disabled in the live catalog.
     for (const id of Object.keys(state.cart)) {
-      if (!state.products.some(p => Number(p.id) === Number(id) && p.active !== false)) delete state.cart[id];
+      if (!state.products.some(p => Number(p.id) === Number(id) && p.active !== false && p.purchasable !== false)) delete state.cart[id];
     }
     persistCart();
     const totals = cartTotals();
@@ -384,6 +393,7 @@
   function addToCart(id) {
     const product = state.products.find(p => Number(p.id) === Number(id) && p.active !== false);
     if (!product) return toast('هذا العنصر غير متاح حاليًا.', 'error');
+    if (product.purchasable === false) return toast('هذه البطاقة للعرض فقط، والشراء والتسليم غير متاحين حاليًا.', 'error');
     const current = Number(state.cart[id] || 0);
     if (current >= 20) return toast('الحد التجريبي للكمية هو 20 لكل عنصر.', 'error');
     state.cart[id] = current + 1;
@@ -402,7 +412,16 @@
     $('dialogProductCategory').textContent = CATEGORY_LABELS[product.category] || 'منتج';
     $('dialogProductName').textContent = product.name;
     $('dialogProductDescription').textContent = product.description;
-    $('dialogProductPrice').textContent = formatPrice(Number(product.price));
+    const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
+    $('dialogProductPrice').textContent = isGiftCard
+      ? `${Number(product.faceValue)} ${product.faceCurrency}`
+      : formatPrice(Number(product.price));
+    $('dialogPriceNote').textContent = isGiftCard
+      ? `قيمة اسمية • ${product.regionLabel || 'منطقة محددة'} — عرض فقط`
+      : 'سعر توضيحي';
+    const addButton = $('dialogAddToCart');
+    addButton.disabled = product.purchasable === false;
+    addButton.textContent = product.purchasable === false ? 'غير متاح للشراء حاليًا' : 'أضف إلى السلة';
     $('dialogProductEmoji').textContent = product.emoji || '✦';
     $('dialogProductArt').className = `dialog-product-art category-${product.category}`;
     openOverlay('product');
