@@ -19,7 +19,7 @@ BlueDrop is an Arabic-first, right-to-left gaming storefront prototype. This rep
 
 ## Local requirements
 
-- Node.js 22 or newer.
+- Node.js 24.x (the same major version pinned for Vercel and CI).
 - PostgreSQL only for persistent demonstration orders and database-backed product administration.
 
 ## Run locally
@@ -35,11 +35,11 @@ Open <http://localhost:3000>. Without `DATABASE_URL`, the local Node server uses
 
 ## Deploy on Vercel
 
-The `public/` folder is the Vercel output directory. Vercel's default for an "Other" project can select `public/` when that folder exists; the homepage source lives at the repository root. The `vercel.json` configuration explicitly selects the public output, and `npm run vercel-build` copies the approved storefront assets into it. This avoids a deployment output that contains only the favicon and therefore returns a 404 for the homepage.
+The `public/` folder is the Vercel output directory. Vercel's default for an "Other" project can select `public/` when that folder exists; the homepage source lives at the repository root. The `vercel.json` configuration explicitly selects the public output, and `npm run vercel-build` copies the approved storefront assets into it. Its install and build commands remove the pnpm-only `npm_config_cache_dir` environment key before invoking npm, avoiding npm's warning about that unsupported configuration key. This avoids a deployment output that contains only the favicon and therefore returns a 404 for the homepage.
 
 1. In Vercel, make sure the project is connected to this repository and the production branch is `main`.
 2. Use the repository root as the Root Directory.
-3. The committed `vercel.json` sets Build Command to `npm run vercel-build` and Output Directory to `public`. Do not override those values with a different output directory.
+3. The committed `vercel.json` sets a sanitized npm Install Command, a sanitized `npm run vercel-build` Build Command, and Output Directory to `public`. Do not override those values with different commands or output paths.
 4. Pushes to `main` should trigger a new Vercel deployment if the Git connection is enabled. Check the latest deployment's build logs and confirm its deployment output contains `index.html`, `styles.css`, `app.js`, `catalog.js` and `favicon.svg`.
 5. The Vercel project auto-detects the `api/` serverless functions. After deployment, test `/api/health` and `/api/products`.
 
