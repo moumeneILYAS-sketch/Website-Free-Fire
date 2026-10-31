@@ -48,6 +48,20 @@
     </button>
     <div class="google-user-controls" id="googleUserControls" hidden>
       <span class="google-account-name" id="googleAccountName"></span>
+      <details class="wallet-dropdown" id="walletDropdown">
+        <summary class="wallet-summary" aria-label="فتح محفظتي ورصيدي">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H19v15H6.5A2.5 2.5 0 0 1 4 16.5z"/><path d="M4 7h15M15.5 12h4M16.5 12v.1"/></svg>
+          <span>محفظتي</span>
+          <strong id="walletBalance">0 دج</strong>
+        </summary>
+        <div class="wallet-dropdown-panel">
+          <small>رصيدك في BlueDrop</small>
+          <strong id="walletPanelBalance">0 دج</strong>
+          <span class="wallet-demo-note">رصيد تجريبي — لا توجد إيداعات مؤكدة بعد</span>
+          <button class="wallet-deposit-button" id="walletDepositButton" type="button">إيداع رصيد</button>
+          <small class="wallet-security-note">سيظهر الرصيد بعد تأكيد الدفع عبر بوابة معتمدة.</small>
+        </div>
+      </details>
       <button class="google-signout" id="googleSignOut" type="button">خروج</button>
     </div>
     <small class="google-auth-hint" id="googleAuthHint" aria-live="polite">تسجيل Google قيد الإعداد</small>
