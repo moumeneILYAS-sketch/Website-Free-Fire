@@ -204,7 +204,7 @@
       button.hidden = true;
       controls.hidden = false;
       $('walletDropdown').hidden = false;
-      name.textContent = state.googleUser.name || state.googleUser.email || 'حساب Google';
+      name.textContent = state.googleUser.name || state.googleUser.email || tr('حساب Google');
       updateWalletCountryUI();
       hint.textContent = tr('تم تسجيل الدخول');
       return;
@@ -275,7 +275,7 @@
       updateGoogleAccountUI();
     } catch (error) {
       state.googleReady = false;
-      $('googleAuthHint').textContent = error.message || 'تسجيل Google غير متاح الآن';
+      $('googleAuthHint').textContent = tr(error.message || 'تسجيل Google غير متاح الآن');
       updateGoogleAccountUI();
     }
   }
@@ -344,7 +344,7 @@
       toast('تم تسجيل الخروج.');
       await bootstrapGoogleAuth();
     } catch (error) {
-      toast(error.message || 'تعذر تسجيل الخروج.', 'error');
+      toast(tr(error.message || 'تعذر تسجيل الخروج.'), 'error');
     }
   }
 
@@ -411,10 +411,10 @@
             ? escapeHtml(tr(product.priceNote))
             : tr('سعر توضيحي');
       const cartButton = isOfficialDiamondTopup
-        ? `<a class="add-button official-purchase-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" aria-label="فتح قناة Garena الرسمية لشحن ${name}" title="${tr('افتح PagoStore الرسمي')}">↗</a>`
+        ? `<a class="add-button official-purchase-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" aria-label="${tr('فتح قناة Garena الرسمية لشحن')} ${name}" title="${tr('افتح PagoStore الرسمي')}">↗</a>`
         : product.purchasable === false
-          ? `<button class="add-button" type="button" disabled aria-label="${name} — غير متاح للشراء" title="${tr('للعرض فقط')}">—</button>`
-          : `<button class="add-button" type="button" data-add="${id}" aria-label="إضافة ${name} إلى السلة" title="${tr('أضف إلى السلة')}">+</button>`;
+          ? `<button class="add-button" type="button" disabled aria-label="${name} — ${tr('غير متاح للشراء')}" title="${tr('للعرض فقط')}">—</button>`
+          : `<button class="add-button" type="button" data-add="${id}" aria-label="${tr('إضافة')} ${name} ${tr('إلى السلة')}" title="${tr('أضف إلى السلة')}">+</button>`;
       return `
         <article class="product-card stagger-${Math.min(index, 8)}">
           <div class="product-visual category-${escapeHtml(product.category)}">
@@ -429,7 +429,7 @@
             <div class="product-footer">
               <div class="product-price"><strong>${price}</strong><small>${priceNote}</small></div>
               <div class="product-actions">
-                <button class="details-button" type="button" data-details="${id}" aria-label="تفاصيل ${name}" title="التفاصيل">↗</button>
+                <button class="details-button" type="button" data-details="${id}" aria-label="${tr('تفاصيل')} ${name}" title="التفاصيل">↗</button>
                 ${cartButton}
               </div>
             </div>
@@ -463,7 +463,7 @@
     persistCart();
     const totals = cartTotals();
     $('cartCount').textContent = totals.count;
-    $('drawerCount').textContent = `${new Intl.NumberFormat(activeLocale()).format(totals.count)} ${tr('عناصر')}`;
+    $('drawerCount').textContent = `${new Intl.NumberFormat(activeLocale()).format(totals.count)} ${tr(totals.count === 1 ? 'عنصر' : 'عناصر')}`;
     $('cartTotal').textContent = formatPrice(totals.amount);
     $('checkoutCount').textContent = totals.count;
     $('checkoutTotal').textContent = formatPrice(totals.amount);
