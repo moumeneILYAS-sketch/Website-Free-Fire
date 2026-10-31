@@ -594,6 +594,50 @@
     if (details) showProduct(details.dataset.details);
   });
 
+  // Delegated cart controls keep working after every renderCart() refresh.
+  $('cartItems').addEventListener('click', event => {
+    const remove = event.target.closest('[data-remove]');
+    if (remove) {
+      const id = String(remove.dataset.remove);
+      const product = state.products.find(item => Number(item.id) === Number(id));
+      if (!Object.hasOwn(state.cart, id)) return;
+      delete state.cart[id];
+      state.idempotencyKey = null;
+      renderCart();
+      toast(product ? `تم حذف «${product.name}» من السلة.` : 'تم حذف المنتج من السلة.');
+      return;
+    }
+
+    const quantityButton = event.target.closest('[data-qty]');
+    if (!quantityButton) return;
+    const id = String(quantityButton.dataset.qty);
+    const current = Number(state.cart[id] || 0);
+    const delta = Number(quantityButton.dataset.delta);
+    if (!Number.isSafeInteger(delta) || ![-1, 1].includes(delta) || current < 1) return;
+
+    const nextQuantity = current + delta;
+    if (nextQuantity <= 0) {
+      delete state.cart[id];
+    } else if (nextQuantity <= 20) {
+      state.cart[id] = nextQuantity;
+    } else {
+      return toast('الحد الأقصى للكمية هو 20 لكل منتج.', 'error');
+    }
+    state.idempotencyKey = null;
+    renderCart();
+  });
+
+  $('clearCartButton').addEventListener('click', () => {
+    if (!Object.keys(state.cart).length) return;
+    const confirmed = window.confirm('هل تريد إلغاء الطلبية وحذف جميع المنتجات من السلة؟');
+    if (!confirmed) return;
+    state.cart = {};
+    state.idempotencyKey = null;
+    persistCart();
+    renderCart();
+    toast('تم إلغاء الطلبية وإفراغ السلة.');
+  });
+
   categoryButtons.forEach(button => button.addEventListener('click', () => setCategory(button.dataset.filter)));
   document.querySelectorAll('[data-category-jump]').forEach(button => button.addEventListener('click', () => {
     setCategory(button.dataset.categoryJump);
