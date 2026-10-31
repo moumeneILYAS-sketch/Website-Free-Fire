@@ -571,63 +571,87 @@ img { max-width: 100%; display: block; }
 
 
 
-/* Google sign-in: prevent any loading rectangle from flashing before the icon is ready. */
+
+/* Frameless Google logo trigger: the logo itself is the entire visible control. */
 .google-auth-wrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0;
-  min-width: 40px;
+  min-width: 30px;
   min-height: 42px;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-.google-signin-slot {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
   margin: 0;
   padding: 0;
-  overflow: visible;
-  vertical-align: middle;
-  line-height: 0;
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
   background: transparent !important;
   border: 0 !important;
-  border-radius: 50%;
   box-shadow: none !important;
-  transform: none;
 }
-.google-signin-slot.is-ready {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
-  transition: opacity 120ms ease-out;
-}
-.google-signin-slot iframe {
+.google-logo-trigger {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 34px;
+  min-width: 30px;
+  min-height: 34px;
+  margin: 0;
+  padding: 2px;
   border: 0 !important;
+  outline: none;
+  border-radius: 0;
+  background: transparent !important;
   box-shadow: none !important;
+  cursor: pointer;
+  transition: transform 140ms ease, opacity 140ms ease;
+}
+.google-logo-trigger:hover {
+  transform: scale(1.1);
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.google-logo-trigger:focus-visible {
+  outline: 2px solid #65b5ff;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.google-logo-trigger:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+.google-logo {
+  display: block;
+  width: 25px;
+  height: 25px;
+  overflow: visible;
 }
 .google-auth-hint {
   display: none !important;
 }
+.google-user-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 1px solid #355579;
+  border-radius: 9px;
+  background: #102541;
+  color: #e9f5ff;
+  font-size: 10px;
+}
 @media (max-width: 600px) {
   .google-auth-wrap {
-    min-width: 40px;
+    min-width: 28px;
     min-height: 40px;
   }
-  .google-signin-slot {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    transform: none;
+  .google-logo-trigger {
+    width: 28px;
+    height: 32px;
+    min-width: 28px;
+    min-height: 32px;
+  }
+  .google-logo {
+    width: 24px;
+    height: 24px;
   }
 }
