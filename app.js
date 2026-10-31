@@ -14,7 +14,14 @@
     profiles: 'الملف الشخصي والرموز'
   });
   const STORAGE_KEY = 'bluedrop.cart.v2';
+  const LANGUAGE_STORAGE_KEY = 'bluedrop.language.mode.v1';
   const $ = (id) => document.getElementById(id);
+  const tr = (value) => window.BlueDropI18n
+    ? window.BlueDropI18n.translate(value, activeLanguage())
+    : String(value ?? '');
+  const activeLocale = () => window.BlueDropI18n
+    ? window.BlueDropI18n.locale(activeLanguage())
+    : 'ar-DZ';
   const categoryButtons = [...document.querySelectorAll('[data-filter]')];
   const productGrid = $('productGrid');
   const cartDrawer = $('cartDrawer');
@@ -38,7 +45,8 @@
     googleCsrfToken: '',
     googleNonce: '',
     googleUser: null,
-    walletCountry: 'DZ'
+    walletCountry: 'DZ',
+    languageMode: 'auto'
   };
 
   const WALLET_COUNTRIES = Object.freeze({
@@ -79,6 +87,48 @@
 
   state.walletCountry = readWalletCountry();
 
+  function readLanguageMode() {
+    try {
+      const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      return ['auto', 'ar', 'fr', 'en', 'de'].includes(saved) ? saved : 'auto';
+    } catch { return 'auto'; }
+  }
+
+  function languageForCountry(countryCode) {
+    const map = {
+      DZ: 'ar', MA: 'fr', TN: 'fr', EG: 'ar', SA: 'ar', AE: 'ar',
+      FR: 'fr', DE: 'de', GB: 'en', US: 'en'
+    };
+    return map[countryCode] || 'en';
+  }
+
+  function activeLanguage() {
+    return state.languageMode === 'auto'
+      ? languageForCountry(state.walletCountry)
+      : state.languageMode;
+  }
+
+  state.languageMode = readLanguageMode();
+
+  function applyLanguagePreference() {
+    const language = activeLanguage();
+    if (window.BlueDropI18n) window.BlueDropI18n.apply(language);
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    $('languageSelect').value = state.languageMode;
+    renderProducts();
+    renderCart();
+    updateWalletCountryUI();
+    updatePaymentMethodNotice();
+  }
+
+  function changeLanguageMode(mode) {
+    if (!['auto', 'ar', 'fr', 'en', 'de'].includes(mode)) return;
+    state.languageMode = mode;
+    try { localStorage.setItem(LANGUAGE_STORAGE_KEY, mode); } catch { /* Keep the choice for this session. */ }
+    applyLanguagePreference();
+  }
+
   function walletMoney(amount, countryCode) {
     const config = WALLET_COUNTRIES[countryCode] || WALLET_COUNTRIES.DZ;
     try {
@@ -97,9 +147,9 @@
     $('walletBalance').textContent = '0';
     $('walletBalance').title = `رصيد المحفظة: ${walletMoney(0, state.walletCountry)}`;
     $('walletPanelBalance').textContent = walletMoney(0, state.walletCountry);
-    $('walletCurrencyLabel').textContent = `${config.name} • ${config.currency}`;
+    $('walletCurrencyLabel').textContent = `${tr(config.name)} • ${config.currency}`;
     $('walletPaymentMethods').innerHTML = config.methods.map(method =>
-      `<span class="wallet-method-chip">${escapeHtml(method)}</span>`
+      `<span class="wallet-method-chip">${escapeHtml(tr(method))}</span>`
     ).join('');
   }
 
@@ -110,7 +160,9 @@
   }
 
   function formatPrice(value) {
-    return new Intl.NumberFormat('ar-DZ', { maximumFractionDigits: 0 }).format(value) + ' د.ج';
+    return new Intl.NumberFormat(activeLocale(), {
+      style: 'currency', currency: 'DZD', maximumFractionDigits: 0
+    }).format(value);
   }
 
   function readCart() {
@@ -135,7 +187,7 @@
 
   function toast(message, kind = 'success') {
     const node = $('toast');
-    node.textContent = message;
+    node.textContent = tr(message);
     node.dataset.kind = kind;
     node.classList.add('show');
     window.clearTimeout(state.toastTimer);
@@ -154,7 +206,7 @@
       $('walletDropdown').hidden = false;
       name.textContent = state.googleUser.name || state.googleUser.email || 'حساب Google';
       updateWalletCountryUI();
-      hint.textContent = 'تم تسجيل الدخول';
+      hint.textContent = tr('تم تسجيل الدخول');
       return;
     }
 
@@ -164,9 +216,9 @@
     button.hidden = false;
     button.disabled = !state.googleEnabled || !state.googleReady;
     button.title = state.googleReady
-      ? 'تسجيل الدخول باستخدام Google'
-      : 'جارٍ تجهيز تسجيل الدخول باستخدام Google';
-    hint.textContent = state.googleEnabled ? 'تسجيل آمن عبر Google' : 'Google قيد الإعداد';
+      ? tr('تسجيل الدخول باستخدام Google')
+      : tr('تسجيل Google قيد الإعداد');
+    hint.textContent = state.googleEnabled ? tr('تسجيل آمن عبر Google') : tr('تسجيل Google قيد الإعداد');
   }
 
   function loadGoogleIdentityScript() {
@@ -313,21 +365,22 @@
     const method = selectedPaymentMethod();
     const notice = $('paymentMethodNotice');
     notice.dataset.method = method;
-    notice.textContent = PAYMENT_METHOD_NOTICES[method] || 'طريقة دفع تجريبية فقط.';
+    notice.textContent = tr(PAYMENT_METHOD_NOTICES[method] || 'طريقة دفع تجريبية فقط.');
   }
 
   function currentProducts() {
-    const query = state.query.toLocaleLowerCase('ar');
+    const query = state.query.toLocaleLowerCase(activeLocale());
     const result = state.products.filter((product) => {
       if (product.active === false) return false;
       const matchesCategory = state.category === 'all' || product.category === state.category;
-      const searchable = `${product.name} ${product.description} ${CATEGORY_LABELS[product.category] || ''} ${product.slug || ''}`;
-      return matchesCategory && searchable.toLocaleLowerCase('ar').includes(query);
+      const searchable = [product.name, tr(product.name), product.description, tr(product.description),
+        CATEGORY_LABELS[product.category] || '', tr(CATEGORY_LABELS[product.category] || ''), product.slug || ''].join(' ');
+      return matchesCategory && searchable.toLocaleLowerCase(activeLocale()).includes(query);
     });
 
     if (state.sort === 'low') result.sort((a, b) => a.price - b.price);
     else if (state.sort === 'high') result.sort((a, b) => b.price - a.price);
-    else if (state.sort === 'name') result.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+    else if (state.sort === 'name') result.sort((a, b) => tr(a.name).localeCompare(tr(b.name), activeLocale()));
     else result.sort((a, b) => (a.featured ?? a.id) - (b.featured ?? b.id));
     return result;
   }
@@ -337,31 +390,31 @@
     productGrid.setAttribute('aria-busy', 'false');
     productGrid.innerHTML = products.map((product, index) => {
       const id = Number(product.id);
-      const name = escapeHtml(product.name);
+      const name = escapeHtml(tr(product.name));
       const emoji = escapeHtml(product.emoji || '✦');
-      const badge = escapeHtml(product.badge || 'تجريبي');
+      const badge = escapeHtml(tr(product.badge || 'تجريبي'));
       const badgeType = ['hot', 'rare'].includes(product.badgeType) ? product.badgeType : '';
-      const category = escapeHtml(CATEGORY_LABELS[product.category] || 'منتج');
-      const description = escapeHtml(product.description);
+      const category = escapeHtml(tr(CATEGORY_LABELS[product.category] || 'منتج'));
+      const description = escapeHtml(tr(product.description));
       const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
       const isOfficialDiamondTopup = product.category === 'diamonds';
       const price = isGiftCard
         ? `${Number(product.faceValue)} ${escapeHtml(product.faceCurrency)}`
         : product.priceDisplay
-          ? escapeHtml(product.priceDisplay)
+          ? escapeHtml(tr(product.priceDisplay))
           : formatPrice(Number(product.price));
       const priceNote = isOfficialDiamondTopup
-        ? 'سعر استرشادي • السعر النهائي لدى Garena'
+        ? tr('سعر استرشادي • السعر النهائي لدى Garena')
         : isGiftCard
           ? `قيمة اسمية • ${escapeHtml(product.regionLabel || 'منطقة محددة')}`
           : product.priceNote
             ? escapeHtml(product.priceNote)
             : 'سعر توضيحي';
       const cartButton = isOfficialDiamondTopup
-        ? `<a class="add-button official-purchase-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" aria-label="فتح قناة Garena الرسمية لشحن ${name}" title="تحقق واشترِ من Garena الرسمي">↗</a>`
+        ? `<a class="add-button official-purchase-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" aria-label="فتح قناة Garena الرسمية لشحن ${name}" title="${tr('افتح PagoStore الرسمي')}">↗</a>`
         : product.purchasable === false
-          ? `<button class="add-button" type="button" disabled aria-label="${name} — غير متاح للشراء" title="عنصر للعرض فقط">—</button>`
-          : `<button class="add-button" type="button" data-add="${id}" aria-label="إضافة ${name} إلى السلة" title="أضف إلى السلة">+</button>`;
+          ? `<button class="add-button" type="button" disabled aria-label="${name} — غير متاح للشراء" title="${tr('للعرض فقط')}">—</button>`
+          : `<button class="add-button" type="button" data-add="${id}" aria-label="إضافة ${name} إلى السلة" title="${tr('أضف إلى السلة')}">+</button>`;
       return `
         <article class="product-card stagger-${Math.min(index, 8)}">
           <div class="product-visual category-${escapeHtml(product.category)}">
@@ -387,7 +440,7 @@
     $('emptyState').hidden = products.length !== 0;
     productGrid.hidden = products.length === 0;
     $('activeFilters').hidden = !(state.query || state.category !== 'all');
-    $('resultCount').textContent = `${products.length} ${products.length === 1 ? 'منتج' : 'منتجات'}`;
+    $('resultCount').textContent = `${new Intl.NumberFormat(activeLocale()).format(products.length)} ${tr(products.length === 1 ? 'منتج' : 'منتجات')}`;
     $('allCount').textContent = String(state.products.filter(p => p.active !== false).length).padStart(2, '0');
   }
 
@@ -410,7 +463,7 @@
     persistCart();
     const totals = cartTotals();
     $('cartCount').textContent = totals.count;
-    $('drawerCount').textContent = `${totals.count} ${totals.count === 1 ? 'عنصر' : 'عناصر'}`;
+    $('drawerCount').textContent = `${new Intl.NumberFormat(activeLocale()).format(totals.count)} ${tr('عناصر')}`;
     $('cartTotal').textContent = formatPrice(totals.amount);
     $('checkoutCount').textContent = totals.count;
     $('checkoutTotal').textContent = formatPrice(totals.amount);
@@ -418,7 +471,7 @@
     $('cartItems').innerHTML = Object.entries(state.cart).map(([id, quantity]) => {
       const product = state.products.find(p => Number(p.id) === Number(id));
       if (!product) return '';
-      const name = escapeHtml(product.name);
+      const name = escapeHtml(tr(product.name));
       return `
         <div class="cart-line">
           <div class="cart-line-art" aria-hidden="true">${escapeHtml(product.emoji || '✦')}</div>
@@ -493,28 +546,28 @@
     const product = state.products.find(p => Number(p.id) === Number(id) && p.active !== false);
     if (!product) return toast('تعذر العثور على تفاصيل هذا العنصر.', 'error');
     state.activeProduct = product;
-    $('dialogProductCategory').textContent = CATEGORY_LABELS[product.category] || 'منتج';
-    $('dialogProductName').textContent = product.name;
-    $('dialogProductDescription').textContent = product.description;
+    $('dialogProductCategory').textContent = tr(CATEGORY_LABELS[product.category] || 'منتج');
+    $('dialogProductName').textContent = tr(product.name);
+    $('dialogProductDescription').textContent = tr(product.description);
     const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
     $('dialogProductPrice').textContent = isGiftCard
       ? `${Number(product.faceValue)} ${product.faceCurrency}`
       : (product.priceDisplay || formatPrice(Number(product.price)));
     const isOfficialDiamondTopup = product.category === 'diamonds';
     $('dialogPriceNote').textContent = isOfficialDiamondTopup
-      ? 'سعر استرشادي • السعر النهائي والباقة المتاحة يظهران في Garena'
+      ? tr('سعر استرشادي • السعر النهائي والباقة المتاحة يظهران في Garena')
       : isGiftCard
-        ? `قيمة اسمية • ${product.regionLabel || 'منطقة محددة'} — عرض فقط`
-        : (product.priceNote || 'سعر توضيحي');
+        ? `${tr('قيمة اسمية •')} ${tr(product.regionLabel || 'منطقة محددة')} — ${tr('للعرض فقط')}`
+        : tr(product.priceNote || 'سعر توضيحي');
     const addButton = $('dialogAddToCart');
     const officialLink = $('dialogOfficialTopupLink');
     officialLink.hidden = !isOfficialDiamondTopup;
     addButton.hidden = isOfficialDiamondTopup;
     addButton.disabled = product.purchasable === false;
-    addButton.textContent = product.purchasable === false ? 'للعرض فقط — غير متاح للشراء' : 'أضف إلى السلة';
-    $('dialogProductNote').textContent = isOfficialDiamondTopup
+    addButton.textContent = tr(product.purchasable === false ? 'للعرض فقط — غير متاح للشراء' : 'أضف إلى السلة');
+    $('dialogProductNote').textContent = tr(isOfficialDiamondTopup
       ? 'سيتم فتح PagoStore الرسمي من Garena. اختر الباقة المتاحة لبلدك وتحقق من السعر قبل الدفع، واستعن بولي أمرك.'
-      : 'عنصر للعرض فقط — لا يوجد مورد رسمي مؤكد أو تسليم من BlueDrop.';
+      : 'عنصر للعرض فقط — لا يوجد مورد رسمي مؤكد أو تسليم من BlueDrop.');
     $('dialogProductEmoji').textContent = product.emoji || '✦';
     $('dialogProductArt').className = `dialog-product-art category-${product.category}`;
     openOverlay('product');
@@ -722,7 +775,7 @@
 
   $('clearCartButton').addEventListener('click', () => {
     if (!Object.keys(state.cart).length) return;
-    const confirmed = window.confirm('هل تريد إلغاء الطلبية وحذف جميع المنتجات من السلة؟');
+    const confirmed = window.confirm(tr('إلغاء الطلبية وإفراغ السلة؟'));
     if (!confirmed) return;
     state.cart = {};
     state.idempotencyKey = null;
@@ -746,7 +799,7 @@
   $('closeCart').addEventListener('click', closeOverlays);
   $('browseCatalog').addEventListener('click', () => { closeOverlays(); $('shop').scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' }); });
   $('checkoutButton').addEventListener('click', () => {
-    if (!cartTotals().count) return toast('سلتك فارغة.', 'error');
+    if (!cartTotals().count) return toast(tr('سلتك فارغة.'), 'error');
     state.idempotencyKey = makeIdempotencyKey();
     openOverlay('checkout');
   });
@@ -761,12 +814,14 @@
   });
   $('googleSignInFallback').addEventListener('click', startGoogleSignIn);
   $('googleSignOut').addEventListener('click', signOutGoogle);
+  $('languageSelect').addEventListener('change', event => changeLanguageMode(event.target.value));
   $('walletCountrySelect').addEventListener('change', event => {
     const country = event.target.value;
     if (!WALLET_COUNTRIES[country]) return;
     state.walletCountry = country;
     try { localStorage.setItem(WALLET_COUNTRY_STORAGE, country); } catch { /* Keep the choice for this page session. */ }
-    updateWalletCountryUI();
+    if (state.languageMode === 'auto') applyLanguagePreference();
+    else updateWalletCountryUI();
   });
   $('walletDepositButton').addEventListener('click', () => {
     toast('الإيداع غير متاح حاليًا. وسائل الدفع المعروضة حسب البلد ليست مفعّلة حتى اعتماد مزوّد دفع محلي.', 'error');
@@ -791,6 +846,7 @@
   });
 
   $('year').textContent = new Date().getFullYear();
+  applyLanguagePreference();
   setupRevealAnimations();
   setupNavigation();
   renderProducts();
