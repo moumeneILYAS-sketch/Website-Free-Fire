@@ -119,7 +119,7 @@
             <span class="category-art category-art-gem" aria-hidden="true"><span>◆</span></span><span class="category-copy"><small>01 / CURRENCY</small><strong>الجواهر</strong><span>تصفّح الباقات <b aria-hidden="true">←</b></span></span><span class="category-glow" aria-hidden="true"></span>
           </button>
           <button class="category-card category-codes reveal reveal-delay-1" type="button" data-category-jump="codes">
-            <span class="category-art category-art-ticket" aria-hidden="true"><span>✳</span></span><span class="category-copy"><small>02 / REWARDS</small><strong>الأكواد</strong><span>شاهد الفئة <b aria-hidden="true">←</b></span></span><span class="category-glow" aria-hidden="true"></span>
+            <span class="category-art category-art-ticket" aria-hidden="true"><span>✳</span></span><span class="category-copy"><small>02 / REWARDS</small><strong>الأكواد والبطاقات</strong><span>شاهد الفئة <b aria-hidden="true">←</b></span></span><span class="category-glow" aria-hidden="true"></span>
           </button>
           <button class="category-card category-skins reveal reveal-delay-2" type="button" data-category-jump="skins">
             <span class="category-art category-art-shield" aria-hidden="true"><span>⬡</span></span><span class="category-copy"><small>03 / COLLECTION</small><strong>السكنات</strong><span>اكتشف العناصر <b aria-hidden="true">←</b></span></span><span class="category-glow" aria-hidden="true"></span>
@@ -141,7 +141,7 @@
           <div class="filter-list" role="group" aria-label="تصفية حسب الفئة">
             <button class="filter-pill is-active" data-filter="all" type="button" aria-pressed="true">الكل <span id="allCount">08</span></button>
             <button class="filter-pill" data-filter="diamonds" type="button" aria-pressed="false">الجواهر</button>
-            <button class="filter-pill" data-filter="codes" type="button" aria-pressed="false">الأكواد</button>
+            <button class="filter-pill" data-filter="codes" type="button" aria-pressed="false">الأكواد والبطاقات</button>
             <button class="filter-pill" data-filter="skins" type="button" aria-pressed="false">السكنات</button>
             <button class="filter-pill" data-filter="emotes" type="button" aria-pressed="false">الرقصات</button>
           </div>
@@ -150,7 +150,7 @@
         <div class="active-filters" id="activeFilters" hidden><span id="resultCount">8 منتجات</span><button id="clearFilters" type="button">مسح الفلاتر ×</button></div>
         <div class="product-grid" id="productGrid" aria-live="polite" aria-busy="false"></div>
         <div class="empty-state" id="emptyState" hidden><span class="empty-art" aria-hidden="true">⌕</span><h3>لم نجد ما تبحث عنه</h3><p>جرّب كلمة بحث مختلفة أو اعرض كل المنتجات.</p><button class="button button-ghost" id="resetCatalog" type="button">عرض كل المنتجات</button></div>
-        <div class="catalog-footnote"><span aria-hidden="true">ⓘ</span><p>أسعار المنتجات وأوصافها تجريبية، ولا تمثل مخزونًا فعليًا أو عروض بيع حقيقية.</p></div>
+        <div class="catalog-footnote"><span aria-hidden="true">ⓘ</span><div><p>أسعار المنتجات وأوصافها تجريبية، ولا تمثل مخزونًا فعليًا أو عروض بيع حقيقية.</p><p>تنبيه البطاقات: بطاقات Google Play وApple المعروضة بالدولار الأمريكي مخصّصة لمنطقة الولايات المتحدة فقط. يجب مطابقة منطقة البطاقة مع بلد حسابك؛ وهي للعرض فقط حاليًا ولا يتوفر بيع أو تسليم فعلي.</p></div></div>
       </div>
     </section>
 
@@ -227,7 +227,7 @@
     <section class="product-dialog" role="dialog" aria-modal="true" aria-labelledby="dialogProductName">
       <button class="icon-button dialog-close" data-close-dialog type="button" aria-label="إغلاق تفاصيل المنتج">×</button>
       <div class="dialog-product-art" id="dialogProductArt" aria-hidden="true"><span id="dialogProductEmoji">💎</span></div>
-      <div class="dialog-product-copy"><span class="product-category" id="dialogProductCategory"></span><h2 id="dialogProductName"></h2><p id="dialogProductDescription"></p><div class="dialog-price"><strong id="dialogProductPrice"></strong><span>سعر توضيحي</span></div><button class="button button-primary full-width" id="dialogAddToCart" type="button">أضف إلى السلة <span aria-hidden="true">←</span></button><small class="dialog-note">عنصر تجريبي — لا يوجد تسليم حقيقي.</small></div>
+      <div class="dialog-product-copy"><span class="product-category" id="dialogProductCategory"></span><h2 id="dialogProductName"></h2><p id="dialogProductDescription"></p><div class="dialog-price"><strong id="dialogProductPrice"></strong><span id="dialogPriceNote">سعر توضيحي</span></div><button class="button button-primary full-width" id="dialogAddToCart" type="button">أضف إلى السلة <span aria-hidden="true">←</span></button><small class="dialog-note">عنصر تجريبي — لا يوجد تسليم حقيقي.</small></div>
     </section>
   </div>
 
