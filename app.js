@@ -28,6 +28,7 @@
     idempotencyKey: null,
     toastTimer: null,
     googleEnabled: false,
+    googleReady: false,
     googleCsrfToken: '',
     googleNonce: '',
     googleUser: null
@@ -73,31 +74,26 @@
   }
 
   function updateGoogleAccountUI() {
-    const fallback = $('googleSignInFallback');
-    const slot = $('googleSignInSlot');
+    const button = $('googleSignInFallback');
     const controls = $('googleUserControls');
     const hint = $('googleAuthHint');
     const name = $('googleAccountName');
+
     if (state.googleUser) {
-      fallback.hidden = true;
-      slot.hidden = true;
+      button.hidden = true;
       controls.hidden = false;
       name.textContent = state.googleUser.name || state.googleUser.email || 'حساب Google';
       hint.textContent = 'تم تسجيل الدخول';
       return;
     }
+
     controls.hidden = true;
-    if (state.googleEnabled) {
-      fallback.hidden = true;
-      slot.hidden = false;
-      hint.textContent = 'تسجيل آمن عبر Google';
-    } else {
-      slot.hidden = true;
-      fallback.hidden = false;
-      fallback.disabled = true;
-      fallback.title = 'يلزم إعداد GOOGLE_CLIENT_ID و AUTH_SESSION_SECRET في الاستضافة';
-      hint.textContent = 'Google قيد الإعداد';
-    }
+    button.hidden = false;
+    button.disabled = !state.googleEnabled || !state.googleReady;
+    button.title = state.googleReady
+      ? 'تسجيل الدخول باستخدام Google'
+      : 'جارٍ تجهيز تسجيل الدخول باستخدام Google';
+    hint.textContent = state.googleEnabled ? 'تسجيل آمن عبر Google' : 'Google قيد الإعداد';
   }
 
   function loadGoogleIdentityScript() {
@@ -129,6 +125,7 @@
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || 'تعذر إعداد تسجيل Google.');
       state.googleEnabled = Boolean(data.enabled);
+      state.googleReady = false;
       state.googleCsrfToken = data.csrfToken || '';
       state.googleNonce = data.nonce || '';
       state.googleUser = data.user || null;
@@ -139,6 +136,7 @@
       if (!window.google || !window.google.accounts || !window.google.accounts.id) {
         throw new Error('خدمة Google غير متاحة في هذا المتصفح.');
       }
+
       window.google.accounts.id.initialize({
         client_id: data.clientId,
         nonce: state.googleNonce,
@@ -146,36 +144,33 @@
         auto_select: false,
         ux_mode: 'popup'
       });
-      const slot = $('googleSignInSlot');
-      slot.textContent = '';
-      slot.classList.remove('is-ready');
 
-      // Keep Google's iframe completely invisible until its first load finishes.
-      const revealWhenLoaded = new MutationObserver(() => {
-        const frame = slot.querySelector('iframe');
-        if (!frame) return;
-        revealWhenLoaded.disconnect();
-        frame.addEventListener('load', () => {
-          slot.classList.add('is-ready');
-        }, { once: true });
-      });
-      revealWhenLoaded.observe(slot, { childList: true, subtree: true });
+      // The visible control is our frameless Google logo; One Tap opens only after a click.
+      state.googleReady = true;
+      updateGoogleAccountUI();
+    } catch (error) {
+      state.googleReady = false;
+      $('googleAuthHint').textContent = error.message || 'تسجيل Google غير متاح الآن';
+      updateGoogleAccountUI();
+    }
+  }
 
-      window.google.accounts.id.renderButton(slot, {
-        type: 'icon',
-        theme: 'filled_black',
-        size: 'large',
-        text: 'signin_with',
-        shape: 'circle',
-        locale: 'ar'
+  function startGoogleSignIn() {
+    if (!state.googleEnabled || !state.googleReady || !window.google?.accounts?.id) {
+      toast('خدمة تسجيل Google ما زالت تُحمّل. حاول بعد لحظة.', 'error');
+      return;
+    }
+
+    try {
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed()) {
+          toast('لم تتمكن Google من عرض نافذة الحساب. تحقق من إعدادات المتصفح وحاول مجددًا.', 'error');
+        } else if (notification.isSkippedMoment()) {
+          toast('لم يتم اختيار حساب Google. اضغط الشعار للمحاولة مرة أخرى.', 'error');
+        }
       });
     } catch (error) {
-      $('googleAuthHint').textContent = error.message || 'تسجيل Google غير متاح الآن';
-      if (!state.googleUser) {
-        $('googleSignInFallback').hidden = false;
-        $('googleSignInFallback').disabled = true;
-        $('googleSignInSlot').hidden = true;
-      }
+      toast(error.message || 'تعذر فتح تسجيل Google الآن.', 'error');
     }
   }
 
@@ -601,6 +596,7 @@
   });
   $('checkoutForm').addEventListener('submit', submitDemoOrder);
   document.querySelectorAll('input[name="paymentMethod"]').forEach(input => input.addEventListener('change', updatePaymentMethodNotice));
+  $('googleSignInFallback').addEventListener('click', startGoogleSignIn);
   $('googleSignOut').addEventListener('click', signOutGoogle);
   $('playerId').addEventListener('input', () => $('playerId').setCustomValidity(''));
   $('dialogAddToCart').addEventListener('click', () => {
