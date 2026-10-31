@@ -50,7 +50,7 @@
   };
 
   const WALLET_COUNTRIES = Object.freeze({
-    DZ: { name: 'الجزائر', currency: 'DZD', locale: 'ar-DZ', methods: ['البطاقة الذهبية (EDAHABIA)', 'بطاقة CIB'] },
+    DZ: { name: 'الجزائر', currency: 'DZD', locale: 'ar-DZ', methods: ['البطاقة الذهبية (EDAHABIA)', 'بطاقة CIB', 'بطاقات البنوك الجزائرية الأخرى (حسب دعم بوابة الدفع)'] },
     MA: { name: 'المغرب', currency: 'MAD', locale: 'ar-MA', methods: ['بطاقات محلية عبر CMI', 'Visa / Mastercard حسب البنك'] },
     TN: { name: 'تونس', currency: 'TND', locale: 'ar-TN', methods: ['البطاقات البنكية المحلية عبر مزوّد معتمد'] },
     EG: { name: 'مصر', currency: 'EGP', locale: 'ar-EG', methods: ['بطاقة Meeza', 'Visa / Mastercard حسب البنك'] },
@@ -392,7 +392,8 @@
     visa: 'Visa غير مفعّلة. يجب تأكيد أهلية التاجر ودعم مزود الدفع قبل تفعيلها. لا تدخل بيانات البطاقة.',
     mastercard: 'Mastercard غير مفعّلة. يجب تأكيد أهلية التاجر ودعم مزود الدفع قبل تفعيلها. لا تدخل بيانات البطاقة.',
     paypal: 'PayPal غير مربوط بحساب تاجر. هذا الاختيار للمعاينة فقط ولا يتم تحويل أموال.',
-    baridimob: 'BaridiMob: لن نطلب تحويلًا أو إيصالًا الآن. لاحقًا يمكن عرض تعليمات رسمية ومراجعة يدوية بعد التحقق من وصول الدفعة.'
+    baridimob: 'BaridiMob: لن نطلب تحويلًا أو إيصالًا الآن. لاحقًا يمكن عرض تعليمات رسمية ومراجعة يدوية بعد التحقق من وصول الدفعة.',
+    other_bank: 'يمكن للعميل تحديد بنك آخر ضمن الطلب. هذا تسجيل لتفضيل وسيلة الدفع فقط؛ لا توجد بوابة متصلة ولا يتم تحصيل الأموال.'
   });
 
   function selectedPaymentMethod() {
