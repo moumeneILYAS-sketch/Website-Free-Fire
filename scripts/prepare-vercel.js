@@ -5,7 +5,7 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const publicDir = path.join(root, 'public');
-const assets = ['index.html', 'styles.css', 'app.js', 'catalog.js'];
+const assets = ['index.html', 'styles.css', 'app.js', 'catalog.js', 'i18n.js'];
 
 fs.mkdirSync(publicDir, { recursive: true });
 
@@ -18,7 +18,7 @@ for (const filename of assets) {
   fs.copyFileSync(source, destination);
 }
 
-const required = ['index.html', 'styles.css', 'app.js', 'catalog.js', 'favicon.svg'];
+const required = ['index.html', 'styles.css', 'app.js', 'catalog.js', 'i18n.js', 'favicon.svg'];
 for (const filename of required) {
   if (!fs.existsSync(path.join(publicDir, filename))) {
     throw new Error('Vercel output is missing: public/' + filename);
