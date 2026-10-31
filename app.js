@@ -448,9 +448,11 @@
         ? `${tr('سعر استرشادي • السعر النهائي لدى Garena')} • ${tr('يشمل عمولة خدمة')} ${productQuote.commissionPercent}%`
         : isGiftCard
           ? `${tr('قيمة اسمية •')} ${escapeHtml(tr(product.regionLabel || 'منطقة محددة'))}`
-          : product.priceNote
-            ? `${escapeHtml(tr(product.priceNote))} • ${tr('يشمل عمولة خدمة')} ${productQuote ? productQuote.commissionPercent : commissionPercent()}%`
-            : `${tr('يشمل عمولة خدمة')} ${productQuote ? productQuote.commissionPercent : commissionPercent()}%`;
+          : productQuote
+            ? product.priceNote
+              ? `${escapeHtml(tr(product.priceNote))} • ${tr('يشمل عمولة خدمة')} ${productQuote.commissionPercent}%`
+              : `${tr('يشمل عمولة خدمة')} ${productQuote.commissionPercent}%`
+            : escapeHtml(tr(product.priceNote || 'للعرض فقط'));
       const cartButton = isOfficialDiamondTopup
         ? `<a class="add-button official-purchase-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" aria-label="${tr('فتح قناة Garena الرسمية لشحن')} ${name}" title="${tr('افتح PagoStore الرسمي')}">↗</a>`
         : product.purchasable === false
