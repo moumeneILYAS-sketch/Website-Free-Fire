@@ -198,7 +198,7 @@
     $('walletDepositFee').textContent = formatWalletAmount(quote.commissionAmount);
     $('walletDepositTotal').textContent = formatWalletAmount(quote.finalPrice);
     $('walletDepositPreviewNotice').textContent = valid
-      ? tr('رسوم خدمة تقديرية فقط؛ لا يتم تحصيل المبلغ ولا زيادة الرصيد.') 
+      ? tr('رسوم خدمة تقديرية فقط؛ لا يتم تحصيل المبلغ ولا زيادة الرصيد.')
       : tr('أدخل مبلغًا موجبًا لمعاينة العمولة والإجمالي.');
     $('walletCommissionRate').textContent = `${tr('عمولة خدمة BlueDrop')}: ${percent}%`;
   }
@@ -445,7 +445,7 @@
           ? escapeHtml(tr(product.priceDisplay))
           : formatPrice(productQuote.finalPrice);
       const priceNote = isOfficialDiamondTopup
-        ? tr('سعر استرشادي • السعر النهائي لدى Garena')
+        ? `${tr('سعر استرشادي • السعر النهائي لدى Garena')} • ${tr('يشمل عمولة خدمة')} ${productQuote.commissionPercent}%`
         : isGiftCard
           ? `${tr('قيمة اسمية •')} ${escapeHtml(tr(product.regionLabel || 'منطقة محددة'))}`
           : product.priceNote
@@ -490,18 +490,15 @@
       const product = state.products.find((item) => Number(item.id) === Number(id) && item.active !== false && item.purchasable !== false);
       if (product && Number.isSafeInteger(quantity) && quantity > 0) {
         const lineSubtotal = Number(product.price) * quantity;
+        const lineQuote = commissionQuote(lineSubtotal, state.walletCountry);
         total.count += quantity;
         total.subtotal += lineSubtotal;
+        total.commission += lineQuote.commissionAmount;
+        total.amount += lineQuote.finalPrice;
       }
       return total;
-    }, { count: 0, subtotal: 0 });
-    const quote = commissionQuote(totals.subtotal, state.walletCountry);
-    return {
-      ...totals,
-      commissionPercent: quote.commissionPercent,
-      commission: quote.commissionAmount,
-      amount: quote.finalPrice
-    };
+    }, { count: 0, subtotal: 0, commission: 0, amount: 0 });
+    return { ...totals, commissionPercent: commissionPercent() };
   }
 
   function renderCart() {
@@ -613,10 +610,10 @@
       : (product.priceDisplay ? tr(product.priceDisplay) : formatPrice(productQuote.finalPrice));
     const isOfficialDiamondTopup = product.category === 'diamonds';
     $('dialogPriceNote').textContent = isOfficialDiamondTopup
-      ? tr('سعر استرشادي • السعر النهائي والباقة المتاحة يظهران في Garena')
+      ? `${tr('سعر استرشادي • السعر النهائي والباقة المتاحة يظهران في Garena')} • ${tr('يشمل عمولة خدمة')} ${productQuote.commissionPercent}%`
       : isGiftCard
         ? `${tr('قيمة اسمية •')} ${tr(product.regionLabel || 'منطقة محددة')} — ${tr('للعرض فقط')}`
-        : tr(product.priceNote || 'سعر توضيحي');
+        : `${tr(product.priceNote || 'سعر توضيحي')} • ${tr('يشمل عمولة خدمة')} ${productQuote ? productQuote.commissionPercent : commissionPercent()}%`;
     const addButton = $('dialogAddToCart');
     const officialLink = $('dialogOfficialTopupLink');
     officialLink.hidden = !isOfficialDiamondTopup;
