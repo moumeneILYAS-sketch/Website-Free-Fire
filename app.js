@@ -89,6 +89,9 @@
       button.hidden = true;
       controls.hidden = false;
       name.textContent = state.googleUser.name || state.googleUser.email || 'حساب Google';
+      // Wallet balance is explicitly a demo placeholder until confirmed-payment accounting is connected.
+      $('walletBalance').textContent = '0 دج';
+      $('walletPanelBalance').textContent = '0 دج';
       hint.textContent = 'تم تسجيل الدخول';
       return;
     }
@@ -694,6 +697,13 @@
   });
   $('googleSignInFallback').addEventListener('click', startGoogleSignIn);
   $('googleSignOut').addEventListener('click', signOutGoogle);
+  $('walletDepositButton').addEventListener('click', () => {
+    toast('إيداع الرصيد غير متاح بعد. ستتم إضافته بعد ربط بوابة دفع معتمدة وتأكيد العملية.', 'error');
+  });
+  document.addEventListener('click', event => {
+    const dropdown = $('walletDropdown');
+    if (dropdown && !dropdown.contains(event.target)) dropdown.open = false;
+  });
   $('playerId').addEventListener('input', () => $('playerId').setCustomValidity(''));
   $('dialogAddToCart').addEventListener('click', () => {
     if (state.activeProduct) addToCart(state.activeProduct.id);
