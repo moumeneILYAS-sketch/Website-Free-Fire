@@ -569,13 +569,14 @@ img { max-width: 100%; display: block; }
 
 
 
-/* Google sign-in: keep Google's own icon iframe intact and align it with header controls. */
+
+/* Google sign-in icon: transparent wrapper, Google-provided dark circular button. */
 .google-auth-wrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0;
-  min-width: 0;
+  min-width: 40px;
   min-height: 42px;
 }
 .google-signin-slot {
@@ -591,18 +592,18 @@ img { max-width: 100%; display: block; }
   overflow: visible;
   vertical-align: middle;
   line-height: 0;
-  background: transparent;
-  border: 0;
+  background: transparent !important;
+  border: 0 !important;
   border-radius: 50%;
-  box-shadow: none;
+  box-shadow: none !important;
   transform: none;
 }
-/* The Google icon is self-explanatory; hide the extra tiny helper label. */
 .google-auth-hint {
   display: none !important;
 }
 @media (max-width: 600px) {
   .google-auth-wrap {
+    min-width: 40px;
     min-height: 40px;
   }
   .google-signin-slot {
