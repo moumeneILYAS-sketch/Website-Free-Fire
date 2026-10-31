@@ -38,7 +38,7 @@
     googleCsrfToken: '',
     googleNonce: '',
     googleUser: null,
-    walletCountry: readWalletCountry()
+    walletCountry: 'DZ'
   };
 
   const WALLET_COUNTRIES = Object.freeze({
@@ -76,6 +76,8 @@
     } catch { /* Storage may be disabled. */ }
     return detectWalletCountry();
   }
+
+  state.walletCountry = readWalletCountry();
 
   function walletMoney(amount, countryCode) {
     const config = WALLET_COUNTRIES[countryCode] || WALLET_COUNTRIES.DZ;
