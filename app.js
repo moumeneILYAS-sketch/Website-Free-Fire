@@ -149,14 +149,12 @@
       const slot = $('googleSignInSlot');
       slot.textContent = '';
       window.google.accounts.id.renderButton(slot, {
-        type: 'standard',
+        type: 'icon',
         theme: 'filled_blue',
-        size: 'medium',
+        size: 'large',
         text: 'signin_with',
-        shape: 'pill',
-        logo_alignment: 'left',
-        locale: 'ar',
-        width: 150
+        shape: 'circle',
+        locale: 'ar'
       });
     } catch (error) {
       $('googleAuthHint').textContent = error.message || 'تسجيل Google غير متاح الآن';
