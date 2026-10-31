@@ -168,7 +168,7 @@
         <div class="active-filters" id="activeFilters" hidden><span id="resultCount">8 منتجات</span><button id="clearFilters" type="button">مسح الفلاتر ×</button></div>
         <div class="product-grid" id="productGrid" aria-live="polite" aria-busy="false"></div>
         <div class="empty-state" id="emptyState" hidden><span class="empty-art" aria-hidden="true">⌕</span><h3>لم نجد ما تبحث عنه</h3><p>جرّب كلمة بحث مختلفة أو اعرض كل المنتجات.</p><button class="button button-ghost" id="resetCatalog" type="button">عرض كل المنتجات</button></div>
-        <div class="catalog-footnote"><span aria-hidden="true">ⓘ</span><div><p>كتالوج Free Fire هنا تجريبي: العناصر التي تحمل عبارة «للعرض فقط» ليس لها سعر أو مخزون أو شحن فعلي، كما أن المحتوى المتاح يتغير حسب الموسم والمنطقة.</p><p>تنبيه البطاقات: بطاقات Google Play وApple المعروضة بالدولار الأمريكي مخصّصة لمنطقة الولايات المتحدة فقط. يجب مطابقة منطقة البطاقة مع بلد حسابك؛ وهي للعرض فقط حاليًا ولا يتوفر بيع أو تسليم فعلي.</p></div></div>
+        <div class="catalog-footnote"><span aria-hidden="true">ⓘ</span><div><p>الجواهر: زر الشراء يفتح PagoStore الرسمي من Garena في تبويب جديد. السعر النهائي والباقة المتاحة يعرضهما الموقع الرسمي حسب البلد؛ لا يتم الدفع داخل BlueDrop.</p><p>العضويات والبطاقات والأزياء والشخصيات والإكسسوارات الأخرى للعرض فقط حتى يتوفر لها مورد رسمي يمكن التحقق منه.</p><p>تنبيه البطاقات: بطاقات Google Play وApple المعروضة بالدولار الأمريكي مخصّصة لمنطقة الولايات المتحدة فقط. يجب مطابقة منطقة البطاقة مع بلد حسابك؛ وهي للعرض فقط حاليًا ولا يتوفر بيع أو تسليم فعلي.</p></div></div>
       </div>
     </section>
 
@@ -199,7 +199,7 @@
           <article class="step-card reveal reveal-delay-1"><span class="step-index">02</span><div class="step-icon">▣</div><h3>راجع</h3><p>أضف العناصر إلى السلة وعدّل الكميات وشاهد المجموع التجريبي.</p><span class="step-line" aria-hidden="true"></span></article>
           <article class="step-card reveal reveal-delay-2"><span class="step-index">03</span><div class="step-icon">✓</div><h3>اختبر</h3><p>جرّب نموذج الطلب لمعرفة شكل التجربة قبل تفعيل أي خدمة فعلية.</p><span class="step-line" aria-hidden="true"></span></article>
         </div>
-        <div class="safety-note reveal"><span class="safety-icon" aria-hidden="true">🔐</span><div><strong>تذكير أمني مهم</strong><p>هذا مشروع تجريبي مستقل. لم يتم ربطه بالدفع أو شحن Free Fire أو تسليم الأكواد. لا نبيع الحسابات ولا نطلب كلمة المرور أو رمز التحقق مطلقًا.</p></div></div>
+        <div class="safety-note reveal"><span class="safety-icon" aria-hidden="true">🔐</span><div><strong>تذكير أمني مهم</strong><p>هذا مشروع تجريبي مستقل ولا يستقبل أموالًا. شحن الجواهر يتم فقط عبر رابط PagoStore الرسمي؛ تحقق من بلدك واطلب مساعدة ولي أمرك قبل الدفع. لا تشارك كلمة المرور أو رمز التحقق مع أي بائع.</p></div></div>
       </div>
     </section>
 
@@ -245,7 +245,7 @@
     <section class="product-dialog" role="dialog" aria-modal="true" aria-labelledby="dialogProductName">
       <button class="icon-button dialog-close" data-close-dialog type="button" aria-label="إغلاق تفاصيل المنتج">×</button>
       <div class="dialog-product-art" id="dialogProductArt" aria-hidden="true"><span id="dialogProductEmoji">💎</span></div>
-      <div class="dialog-product-copy"><span class="product-category" id="dialogProductCategory"></span><h2 id="dialogProductName"></h2><p id="dialogProductDescription"></p><div class="dialog-price"><strong id="dialogProductPrice"></strong><span id="dialogPriceNote">سعر توضيحي</span></div><button class="button button-primary full-width" id="dialogAddToCart" type="button">أضف إلى السلة <span aria-hidden="true">←</span></button><small class="dialog-note">عنصر تجريبي — لا يوجد تسليم حقيقي.</small></div>
+      <div class="dialog-product-copy"><span class="product-category" id="dialogProductCategory"></span><h2 id="dialogProductName"></h2><p id="dialogProductDescription"></p><div class="dialog-price"><strong id="dialogProductPrice"></strong><span id="dialogPriceNote">سعر توضيحي</span></div><a class="button button-primary full-width official-topup-cta" id="dialogOfficialTopupLink" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" hidden>فتح PagoStore الرسمي <span aria-hidden="true">↗</span></a><button class="button button-primary full-width" id="dialogAddToCart" type="button">أضف إلى السلة <span aria-hidden="true">←</span></button><small class="dialog-note" id="dialogProductNote">عنصر تجريبي — لا يوجد تسليم حقيقي.</small></div>
     </section>
   </div>
 
