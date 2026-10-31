@@ -668,3 +668,26 @@ img { max-width: 100%; display: block; }
   cursor: not-allowed;
   background: #18304b;
 }
+
+
+/* Cancel the current cart/order without starting checkout. */
+.cart-cancel-order {
+  margin-top: 9px;
+  min-height: 39px;
+  padding: 9px 12px;
+  border: 1px solid rgb(239 105 119 / 38%);
+  border-radius: 10px;
+  background: rgb(113 34 48 / 18%);
+  color: #ff9ca8;
+  font: 700 11px inherit;
+  cursor: pointer;
+  transition: background var(--motion-fast), border-color var(--motion-fast);
+}
+.cart-cancel-order:hover {
+  border-color: rgb(239 105 119 / 70%);
+  background: rgb(113 34 48 / 30%);
+}
+.cart-cancel-order:focus-visible {
+  outline: 2px solid #ff9ca8;
+  outline-offset: 3px;
+}
