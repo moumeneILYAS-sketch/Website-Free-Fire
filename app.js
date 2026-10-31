@@ -150,7 +150,7 @@
       slot.textContent = '';
       window.google.accounts.id.renderButton(slot, {
         type: 'icon',
-        theme: 'filled_blue',
+        theme: 'filled_black',
         size: 'large',
         text: 'signin_with',
         shape: 'circle',
