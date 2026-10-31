@@ -655,3 +655,16 @@ img { max-width: 100%; display: block; }
     height: 24px;
   }
 }
+
+
+/* Gift-card preview actions stay visibly unavailable until verified supply is configured. */
+.add-button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+#dialogAddToCart:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+  background: #18304b;
+}
