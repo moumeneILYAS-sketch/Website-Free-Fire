@@ -77,7 +77,7 @@
       <span class="wallet-demo-note">الرصيد التجريبي — لا توجد إيداعات مؤكدة</span>
       <span class="wallet-commission-note" id="walletCommissionRate">عمولة خدمة BlueDrop: 2%</span>
       <label class="wallet-country-label" for="walletDepositAmount">مبلغ الإيداع المراد إضافته</label>
-      <input class="wallet-deposit-input" id="walletDepositAmount" type="number" min="100" max="10000000" step="100" inputmode="decimal" placeholder="مثال: 1000">
+      <input class="wallet-deposit-input" id="walletDepositAmount" type="number" min="1" max="10000000" step="0.01" inputmode="decimal" placeholder="مثال: 1000">
       <div class="wallet-deposit-breakdown">
         <span>عمولة الخدمة (2%)</span><strong id="walletDepositFee">0</strong>
         <span>المجموع التقديري</span><strong id="walletDepositTotal">0</strong>
@@ -102,6 +102,7 @@
       <span class="wallet-method-status">غير مفعّلة في BlueDrop حاليًا</span>
       <button class="wallet-deposit-button" id="walletDepositButton" type="button">معاينة رسوم الإيداع</button>
       <small class="wallet-security-note">لا تدخل بيانات البطاقة أو الحساب البنكي هنا. الإيداع يحتاج بوابة دفع مرخّصة.</small>
+      <small class="wallet-security-note">الأسعار الحالية للمنتجات بالدينار الجزائري؛ تحويل العملات غير مربوط بعد.</small>
     </div>
   </details>
   <button class="icon-action search-toggle" id="focusSearch" type="button" aria-label="البحث عن منتج" title="البحث (Ctrl+K)">
