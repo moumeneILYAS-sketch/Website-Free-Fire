@@ -565,3 +565,27 @@ img { max-width: 100%; display: block; }
   .payment-method-grid { gap:7px; }
   .payment-method { min-height:78px; padding:8px; }
 }
+
+
+/* Keep the Google Identity button wrapper transparent on the dark header. */
+.google-auth-wrap,
+.google-signin-slot,
+.google-signin-slot > div,
+.google-signin-slot iframe {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.google-signin-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 10px;
+  vertical-align: middle;
+}
+.google-signin-slot iframe {
+  display: block;
+  color-scheme: dark;
+}
