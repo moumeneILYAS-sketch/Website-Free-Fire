@@ -151,6 +151,7 @@
     $('walletPaymentMethods').innerHTML = config.methods.map(method =>
       `<span class="wallet-method-chip">${escapeHtml(tr(method))}</span>`
     ).join('');
+    updateWalletDepositPreview();
   }
 
   function escapeHtml(value) {
@@ -159,10 +160,47 @@
     })[character]);
   }
 
+  function commissionPercent(countryCode = state.walletCountry) {
+    return window.BlueDropCommission
+      ? window.BlueDropCommission.resolvePercent({ countryCode })
+      : 2;
+  }
+
+  function commissionQuote(baseAmount, countryCode = state.walletCountry, decimals = 0) {
+    if (window.BlueDropCommission) {
+      return window.BlueDropCommission.calculate(baseAmount, { countryCode, decimals });
+    }
+    const basePrice = Math.max(0, Number(baseAmount) || 0);
+    const commissionAmount = Math.round(basePrice * 0.02 * (10 ** decimals)) / (10 ** decimals);
+    return { basePrice, commissionPercent: 2, commissionAmount, finalPrice: basePrice + commissionAmount };
+  }
+
   function formatPrice(value) {
     return new Intl.NumberFormat(activeLocale(), {
       style: 'currency', currency: 'DZD', maximumFractionDigits: 0
     }).format(value);
+  }
+
+  function formatWalletAmount(value, countryCode = state.walletCountry) {
+    return walletMoney(value, countryCode);
+  }
+
+  function updateWalletDepositPreview() {
+    const input = $('walletDepositAmount');
+    if (!input) return;
+    const amount = Number(input.value);
+    const currency = (WALLET_COUNTRIES[state.walletCountry] || WALLET_COUNTRIES.DZ).currency;
+    const percent = commissionPercent();
+    const valid = Number.isFinite(amount) && amount > 0 && amount <= 10000000;
+    const quote = valid
+      ? commissionQuote(amount, state.walletCountry, currency === 'DZD' ? 0 : 2)
+      : commissionQuote(0, state.walletCountry, currency === 'DZD' ? 0 : 2);
+    $('walletDepositFee').textContent = formatWalletAmount(quote.commissionAmount);
+    $('walletDepositTotal').textContent = formatWalletAmount(quote.finalPrice);
+    $('walletDepositPreviewNotice').textContent = valid
+      ? tr('رسوم خدمة تقديرية فقط؛ لا يتم تحصيل المبلغ ولا زيادة الرصيد.') 
+      : tr('أدخل مبلغًا موجبًا لمعاينة العمولة والإجمالي.');
+    $('walletCommissionRate').textContent = `${tr('عمولة خدمة BlueDrop')}: ${percent}%`;
   }
 
   function readCart() {
@@ -398,18 +436,21 @@
       const description = escapeHtml(tr(product.description));
       const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
       const isOfficialDiamondTopup = product.category === 'diamonds';
+      const productQuote = !isGiftCard && !product.priceDisplay
+        ? commissionQuote(Number(product.price), state.walletCountry)
+        : null;
       const price = isGiftCard
         ? `${Number(product.faceValue)} ${escapeHtml(product.faceCurrency)}`
         : product.priceDisplay
           ? escapeHtml(tr(product.priceDisplay))
-          : formatPrice(Number(product.price));
+          : formatPrice(productQuote.finalPrice);
       const priceNote = isOfficialDiamondTopup
         ? tr('سعر استرشادي • السعر النهائي لدى Garena')
         : isGiftCard
           ? `${tr('قيمة اسمية •')} ${escapeHtml(tr(product.regionLabel || 'منطقة محددة'))}`
           : product.priceNote
-            ? escapeHtml(tr(product.priceNote))
-            : tr('سعر توضيحي');
+            ? `${escapeHtml(tr(product.priceNote))} • ${tr('يشمل عمولة خدمة')} ${productQuote ? productQuote.commissionPercent : commissionPercent()}%`
+            : `${tr('يشمل عمولة خدمة')} ${productQuote ? productQuote.commissionPercent : commissionPercent()}%`;
       const cartButton = isOfficialDiamondTopup
         ? `<a class="add-button official-purchase-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" aria-label="${tr('فتح قناة Garena الرسمية لشحن')} ${name}" title="${tr('افتح PagoStore الرسمي')}">↗</a>`
         : product.purchasable === false
@@ -445,14 +486,22 @@
   }
 
   function cartTotals() {
-    return Object.entries(state.cart).reduce((total, [id, quantity]) => {
+    const totals = Object.entries(state.cart).reduce((total, [id, quantity]) => {
       const product = state.products.find((item) => Number(item.id) === Number(id) && item.active !== false && item.purchasable !== false);
       if (product && Number.isSafeInteger(quantity) && quantity > 0) {
+        const lineSubtotal = Number(product.price) * quantity;
         total.count += quantity;
-        total.amount += Number(product.price) * quantity;
+        total.subtotal += lineSubtotal;
       }
       return total;
-    }, { count: 0, amount: 0 });
+    }, { count: 0, subtotal: 0 });
+    const quote = commissionQuote(totals.subtotal, state.walletCountry);
+    return {
+      ...totals,
+      commissionPercent: quote.commissionPercent,
+      commission: quote.commissionAmount,
+      amount: quote.finalPrice
+    };
   }
 
   function renderCart() {
@@ -464,8 +513,14 @@
     const totals = cartTotals();
     $('cartCount').textContent = totals.count;
     $('drawerCount').textContent = `${new Intl.NumberFormat(activeLocale()).format(totals.count)} ${tr(totals.count === 1 ? 'عنصر' : 'عناصر')}`;
+    $('cartSubtotal').textContent = formatPrice(totals.subtotal);
+    $('cartCommissionLabel').textContent = `${tr('عمولة خدمة BlueDrop')} (${totals.commissionPercent}%)`;
+    $('cartCommissionTotal').textContent = formatPrice(totals.commission);
     $('cartTotal').textContent = formatPrice(totals.amount);
     $('checkoutCount').textContent = totals.count;
+    $('checkoutSubtotal').textContent = formatPrice(totals.subtotal);
+    $('checkoutCommissionLabel').textContent = `${tr('عمولة خدمة BlueDrop')} (${totals.commissionPercent}%)`;
+    $('checkoutCommission').textContent = formatPrice(totals.commission);
     $('checkoutTotal').textContent = formatPrice(totals.amount);
 
     $('cartItems').innerHTML = Object.entries(state.cart).map(([id, quantity]) => {
@@ -477,7 +532,7 @@
           <div class="cart-line-art" aria-hidden="true">${escapeHtml(product.emoji || '✦')}</div>
           <div>
             <div class="cart-line-title">${name}</div>
-            <div class="cart-line-price">${formatPrice(Number(product.price) * quantity)}</div>
+            <div class="cart-line-price">${formatPrice(commissionQuote(Number(product.price) * quantity, state.walletCountry).finalPrice)}</div>
             <div class="quantity-control">
               <button type="button" data-qty="${product.id}" data-delta="-1" aria-label="${tr('تقليل كمية')} ${name}">−</button>
               <span aria-label="الكمية">${quantity}</span>
@@ -550,9 +605,12 @@
     $('dialogProductName').textContent = tr(product.name);
     $('dialogProductDescription').textContent = tr(product.description);
     const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
+    const productQuote = !isGiftCard && !product.priceDisplay
+      ? commissionQuote(Number(product.price), state.walletCountry)
+      : null;
     $('dialogProductPrice').textContent = isGiftCard
       ? `${Number(product.faceValue)} ${product.faceCurrency}`
-      : (product.priceDisplay ? tr(product.priceDisplay) : formatPrice(Number(product.price)));
+      : (product.priceDisplay ? tr(product.priceDisplay) : formatPrice(productQuote.finalPrice));
     const isOfficialDiamondTopup = product.category === 'diamonds';
     $('dialogPriceNote').textContent = isOfficialDiamondTopup
       ? tr('سعر استرشادي • السعر النهائي والباقة المتاحة يظهران في Garena')
@@ -691,6 +749,7 @@
         body: JSON.stringify({
           playerId,
           paymentMethod,
+          countryCode: state.walletCountry,
           items: Object.entries(state.cart).map(([id, quantity]) => ({ productId: Number(id), quantity }))
         })
       });
@@ -821,10 +880,21 @@
     state.walletCountry = country;
     try { localStorage.setItem(WALLET_COUNTRY_STORAGE, country); } catch { /* Keep the choice for this page session. */ }
     if (state.languageMode === 'auto') applyLanguagePreference();
-    else updateWalletCountryUI();
+    else {
+      updateWalletCountryUI();
+      renderProducts();
+      renderCart();
+    }
   });
+  $('walletDepositAmount').addEventListener('input', updateWalletDepositPreview);
   $('walletDepositButton').addEventListener('click', () => {
-    toast('الإيداع غير متاح حاليًا. وسائل الدفع المعروضة حسب البلد ليست مفعّلة حتى اعتماد مزوّد دفع محلي.', 'error');
+    updateWalletDepositPreview();
+    const amount = Number($('walletDepositAmount').value);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast('أدخل مبلغًا موجبًا لمعاينة العمولة والإجمالي.', 'error');
+      return;
+    }
+    toast('هذه معاينة رسوم فقط؛ لم يتم تحصيل أي مبلغ ولم يتغير رصيد المحفظة.');
   });
   document.addEventListener('click', event => {
     const dropdown = $('walletDropdown');
