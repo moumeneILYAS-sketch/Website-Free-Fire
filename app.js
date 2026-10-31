@@ -5,7 +5,13 @@
     diamonds: 'الجواهر',
     codes: 'الأكواد وبطاقات الهدايا',
     skins: 'السكنات',
-    emotes: 'الرقصات'
+    emotes: 'الرقصات',
+    memberships: 'العضويات الأسبوعية والشهرية',
+    passes: 'Booyah Pass',
+    characters: 'الشخصيات',
+    pets: 'الحيوانات الأليفة',
+    accessories: 'الإكسسوارات والمظاهر',
+    profiles: 'الملف الشخصي والرموز'
   });
   const STORAGE_KEY = 'bluedrop.cart.v2';
   const $ = (id) => document.getElementById(id);
@@ -273,12 +279,16 @@
       const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
       const price = isGiftCard
         ? `${Number(product.faceValue)} ${escapeHtml(product.faceCurrency)}`
-        : formatPrice(Number(product.price));
+        : product.priceDisplay
+          ? escapeHtml(product.priceDisplay)
+          : formatPrice(Number(product.price));
       const priceNote = isGiftCard
         ? `قيمة اسمية • ${escapeHtml(product.regionLabel || 'منطقة محددة')}`
-        : 'سعر توضيحي';
+        : product.priceNote
+          ? escapeHtml(product.priceNote)
+          : 'سعر توضيحي';
       const cartButton = product.purchasable === false
-        ? `<button class="add-button" type="button" disabled aria-label="${name} — غير متاح للشراء" title="بطاقة للعرض فقط">—</button>`
+        ? `<button class="add-button" type="button" disabled aria-label="${name} — غير متاح للشراء" title="عنصر للعرض فقط">—</button>`
         : `<button class="add-button" type="button" data-add="${id}" aria-label="إضافة ${name} إلى السلة" title="أضف إلى السلة">+</button>`;
       return `
         <article class="product-card stagger-${Math.min(index, 8)}">
@@ -368,7 +378,8 @@
       $('closeCart').focus();
     } else if (which === 'product') {
       productDialog.hidden = false;
-      $('dialogAddToCart').focus();
+      const action = $('dialogAddToCart');
+      (action.disabled ? productDialog.querySelector('.dialog-close') : action).focus();
     } else if (which === 'checkout') {
       checkoutDialog.hidden = false;
       $('playerId').focus();
@@ -415,13 +426,13 @@
     const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
     $('dialogProductPrice').textContent = isGiftCard
       ? `${Number(product.faceValue)} ${product.faceCurrency}`
-      : formatPrice(Number(product.price));
+      : (product.priceDisplay || formatPrice(Number(product.price)));
     $('dialogPriceNote').textContent = isGiftCard
       ? `قيمة اسمية • ${product.regionLabel || 'منطقة محددة'} — عرض فقط`
-      : 'سعر توضيحي';
+      : (product.priceNote || 'سعر توضيحي');
     const addButton = $('dialogAddToCart');
     addButton.disabled = product.purchasable === false;
-    addButton.textContent = product.purchasable === false ? 'غير متاح للشراء حاليًا' : 'أضف إلى السلة';
+    addButton.textContent = product.purchasable === false ? 'للعرض فقط — غير متاح للشراء' : 'أضف إلى السلة';
     $('dialogProductEmoji').textContent = product.emoji || '✦';
     $('dialogProductArt').className = `dialog-product-art category-${product.category}`;
     openOverlay('product');
