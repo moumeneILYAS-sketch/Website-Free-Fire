@@ -12,6 +12,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css">
   <script src="/catalog.js" defer></script>
+  <script src="/i18n.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
@@ -53,6 +54,15 @@
     </div>
     <small class="google-auth-hint" id="googleAuthHint" aria-live="polite">تسجيل Google قيد الإعداد</small>
   </div>
+  <label class="language-switcher" for="languageSelect" title="Language / Langue / Sprache">
+    <span aria-hidden="true">文</span>
+    <select id="languageSelect" aria-label="لغة المتجر">
+      <option value="ar">العربية</option>
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+      <option value="de">Deutsch</option>
+    </select>
+  </label>
   <details class="wallet-dropdown" id="walletDropdown" hidden>
     <summary class="wallet-summary" aria-label="فتح المحفظة والعملة ووسائل الدفع" title="المحفظة">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H19v15H6.5A2.5 2.5 0 0 1 4 16.5z"/><path d="M4 7h15M15.5 12h4M16.5 12v.1"/></svg>
