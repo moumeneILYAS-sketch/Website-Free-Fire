@@ -37,8 +37,69 @@
     googleReady: false,
     googleCsrfToken: '',
     googleNonce: '',
-    googleUser: null
+    googleUser: null,
+    walletCountry: readWalletCountry()
   };
+
+  const WALLET_COUNTRIES = Object.freeze({
+    DZ: { name: 'الجزائر', currency: 'DZD', locale: 'ar-DZ', methods: ['البطاقة الذهبية (EDAHABIA)', 'بطاقة CIB'] },
+    MA: { name: 'المغرب', currency: 'MAD', locale: 'ar-MA', methods: ['بطاقات محلية عبر CMI', 'Visa / Mastercard حسب البنك'] },
+    TN: { name: 'تونس', currency: 'TND', locale: 'ar-TN', methods: ['البطاقات البنكية المحلية عبر مزوّد معتمد'] },
+    EG: { name: 'مصر', currency: 'EGP', locale: 'ar-EG', methods: ['بطاقة Meeza', 'Visa / Mastercard حسب البنك'] },
+    SA: { name: 'السعودية', currency: 'SAR', locale: 'ar-SA', methods: ['مدى (mada)', 'Visa / Mastercard'] },
+    AE: { name: 'الإمارات', currency: 'AED', locale: 'ar-AE', methods: ['البطاقات البنكية المحلية', 'Visa / Mastercard', 'Apple Pay / Google Pay عند دعم المزوّد'] },
+    FR: { name: 'فرنسا', currency: 'EUR', locale: 'fr-FR', methods: ['Carte bancaire', 'تحويل SEPA باليورو'] },
+    DE: { name: 'ألمانيا', currency: 'EUR', locale: 'de-DE', methods: ['البطاقات البنكية', 'تحويل SEPA باليورو'] },
+    GB: { name: 'المملكة المتحدة', currency: 'GBP', locale: 'en-GB', methods: ['البطاقات البنكية', 'التحويل البنكي المحلي'] },
+    US: { name: 'الولايات المتحدة', currency: 'USD', locale: 'en-US', methods: ['البطاقات البنكية', 'التحويل المصرفي عبر مزوّد معتمد'] }
+  });
+  const WALLET_COUNTRY_STORAGE = 'bluedrop.wallet.country.v2';
+
+  function detectWalletCountry() {
+    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    const zoneMap = {
+      'Africa/Algiers': 'DZ', 'Africa/Casablanca': 'MA', 'Africa/Tunis': 'TN',
+      'Africa/Cairo': 'EG', 'Asia/Riyadh': 'SA', 'Asia/Dubai': 'AE',
+      'Europe/Paris': 'FR', 'Europe/Berlin': 'DE', 'Europe/London': 'GB',
+      'America/New_York': 'US', 'America/Chicago': 'US', 'America/Los_Angeles': 'US'
+    };
+    if (zoneMap[zone]) return zoneMap[zone];
+    const locale = String(navigator.language || '').toUpperCase();
+    const region = locale.match(/[-_]([A-Z]{2})(?:$|[-_])/);
+    return region && WALLET_COUNTRIES[region[1]] ? region[1] : 'DZ';
+  }
+
+  function readWalletCountry() {
+    try {
+      const saved = localStorage.getItem(WALLET_COUNTRY_STORAGE);
+      if (saved && WALLET_COUNTRIES[saved]) return saved;
+    } catch { /* Storage may be disabled. */ }
+    return detectWalletCountry();
+  }
+
+  function walletMoney(amount, countryCode) {
+    const config = WALLET_COUNTRIES[countryCode] || WALLET_COUNTRIES.DZ;
+    try {
+      return new Intl.NumberFormat(config.locale, {
+        style: 'currency', currency: config.currency, maximumFractionDigits: 2
+      }).format(amount);
+    } catch {
+      return `0 ${config.currency}`;
+    }
+  }
+
+  function updateWalletCountryUI() {
+    const config = WALLET_COUNTRIES[state.walletCountry] || WALLET_COUNTRIES.DZ;
+    const select = $('walletCountrySelect');
+    if (select) select.value = state.walletCountry;
+    $('walletBalance').textContent = '0';
+    $('walletBalance').title = `رصيد المحفظة: ${walletMoney(0, state.walletCountry)}`;
+    $('walletPanelBalance').textContent = walletMoney(0, state.walletCountry);
+    $('walletCurrencyLabel').textContent = `${config.name} • ${config.currency}`;
+    $('walletPaymentMethods').innerHTML = config.methods.map(method =>
+      `<span class="wallet-method-chip">${escapeHtml(method)}</span>`
+    ).join('');
+  }
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (character) => ({
@@ -88,15 +149,16 @@
     if (state.googleUser) {
       button.hidden = true;
       controls.hidden = false;
+      $('walletDropdown').hidden = false;
       name.textContent = state.googleUser.name || state.googleUser.email || 'حساب Google';
-      // Wallet balance is explicitly a demo placeholder until confirmed-payment accounting is connected.
-      $('walletBalance').textContent = '0 دج';
-      $('walletPanelBalance').textContent = '0 دج';
+      updateWalletCountryUI();
       hint.textContent = 'تم تسجيل الدخول';
       return;
     }
 
     controls.hidden = true;
+    $('walletDropdown').hidden = true;
+    $('walletDropdown').open = false;
     button.hidden = false;
     button.disabled = !state.googleEnabled || !state.googleReady;
     button.title = state.googleReady
@@ -697,8 +759,15 @@
   });
   $('googleSignInFallback').addEventListener('click', startGoogleSignIn);
   $('googleSignOut').addEventListener('click', signOutGoogle);
+  $('walletCountrySelect').addEventListener('change', event => {
+    const country = event.target.value;
+    if (!WALLET_COUNTRIES[country]) return;
+    state.walletCountry = country;
+    try { localStorage.setItem(WALLET_COUNTRY_STORAGE, country); } catch { /* Keep the choice for this page session. */ }
+    updateWalletCountryUI();
+  });
   $('walletDepositButton').addEventListener('click', () => {
-    toast('إيداع الرصيد غير متاح بعد. ستتم إضافته بعد ربط بوابة دفع معتمدة وتأكيد العملية.', 'error');
+    toast('الإيداع غير متاح حاليًا. وسائل الدفع المعروضة حسب البلد ليست مفعّلة حتى اعتماد مزوّد دفع محلي.', 'error');
   });
   document.addEventListener('click', event => {
     const dropdown = $('walletDropdown');
