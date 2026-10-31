@@ -4,7 +4,7 @@
   const CATEGORY_LABELS = Object.freeze({
     diamonds: 'الجواهر',
     codes: 'الأكواد وبطاقات الهدايا',
-    skins: 'السكنات',
+    skins: 'الأزياء والمظاهر',
     emotes: 'الرقصات',
     memberships: 'العضويات الأسبوعية والشهرية',
     passes: 'Booyah Pass',
