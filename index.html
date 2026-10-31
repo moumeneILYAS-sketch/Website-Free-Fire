@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/styles.css">
   <script src="/catalog.js" defer></script>
   <script src="/i18n.js" defer></script>
+  <script src="/commission.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
@@ -74,6 +75,14 @@
       <small>رصيد BlueDrop</small>
       <strong id="walletPanelBalance">0 دج</strong>
       <span class="wallet-demo-note">الرصيد التجريبي — لا توجد إيداعات مؤكدة</span>
+      <span class="wallet-commission-note" id="walletCommissionRate">عمولة خدمة BlueDrop: 2%</span>
+      <label class="wallet-country-label" for="walletDepositAmount">مبلغ الإيداع المراد إضافته</label>
+      <input class="wallet-deposit-input" id="walletDepositAmount" type="number" min="100" max="10000000" step="100" inputmode="decimal" placeholder="مثال: 1000">
+      <div class="wallet-deposit-breakdown">
+        <span>عمولة الخدمة (2%)</span><strong id="walletDepositFee">0</strong>
+        <span>المجموع التقديري</span><strong id="walletDepositTotal">0</strong>
+      </div>
+      <span class="wallet-method-status">حساب تجريبي فقط — لا يتم تحصيل الأموال أو إضافة رصيد</span>
       <label class="wallet-country-label" for="walletCountrySelect">بلدك أو منطقة حسابك</label>
       <select id="walletCountrySelect" class="wallet-country-select">
         <option value="DZ">الجزائر — DZD</option>
@@ -90,7 +99,7 @@
       <small class="wallet-method-title">وسائل الدفع المحلية المعروفة</small>
       <div class="wallet-method-list" id="walletPaymentMethods"></div>
       <span class="wallet-method-status">غير مفعّلة في BlueDrop حاليًا</span>
-      <button class="wallet-deposit-button" id="walletDepositButton" type="button">إيداع رصيد</button>
+      <button class="wallet-deposit-button" id="walletDepositButton" type="button">معاينة رسوم الإيداع</button>
       <small class="wallet-security-note">لا تدخل بيانات البطاقة أو الحساب البنكي هنا. الإيداع يحتاج بوابة دفع مرخّصة.</small>
     </div>
   </details>
@@ -280,7 +289,12 @@
     <div class="drawer-header"><div><span class="section-eyebrow">اختياراتك</span><h2 id="cartTitle">سلة المشتريات <small id="drawerCount">0 عناصر</small></h2></div><button class="icon-button close-overlay" id="closeCart" type="button" aria-label="إغلاق السلة">×</button></div>
     <div class="drawer-items" id="cartItems"></div>
     <div class="drawer-empty" id="cartEmpty"><span aria-hidden="true">▣</span><h3>سلتك فارغة الآن</h3><p>اكتشف المنتجات وأضف اختياراتك إلى السلة.</p><button class="button button-ghost close-overlay" id="browseCatalog" type="button">تصفّح المتجر</button></div>
-    <div class="drawer-footer" id="drawerFooter"><div class="total-row"><span>المجموع التجريبي</span><strong id="cartTotal">0 د.ج</strong></div><p>لن يتم تحصيل أي مبلغ من خلال هذه النسخة.</p><button class="button button-primary full-width" id="checkoutButton" type="button">متابعة إلى المعاينة <span aria-hidden="true">←</span></button><button class="cart-cancel-order full-width" id="clearCartButton" type="button">إلغاء الطلبية وإفراغ السلة</button></div>
+    <div class="drawer-footer" id="drawerFooter">
+      <div class="commission-breakdown">
+        <div><span>المجموع قبل عمولة الخدمة</span><strong id="cartSubtotal">0 د.ج</strong></div>
+        <div><span id="cartCommissionLabel">عمولة خدمة BlueDrop (2%)</span><strong id="cartCommissionTotal">0 د.ج</strong></div>
+      </div>
+      <div class="total-row"><span>الإجمالي التقديري شامل عمولة الخدمة</span><strong id="cartTotal">0 د.ج</strong></div><p>لن يتم تحصيل أي مبلغ من خلال هذه النسخة.</p><button class="button button-primary full-width" id="checkoutButton" type="button">متابعة إلى المعاينة <span aria-hidden="true">←</span></button><button class="cart-cancel-order full-width" id="clearCartButton" type="button">إلغاء الطلبية وإفراغ السلة</button></div>
   </aside>
 
   <div class="dialog-backdrop" id="productDialogBackdrop" hidden>
@@ -336,7 +350,13 @@
           <p class="bank-link-info" id="bankLinkInfo" hidden>عند تفعيل بوابة دفع معتمدة، سيُحوّلك BlueDrop إلى صفحة دفع آمنة تابعة لمزوّد الدفع لتستخدم بطاقتك الموجودة. لن نطلب رقم البطاقة أو الرقم السري أو رمز OTP داخل BlueDrop. حفظ البطاقة للمرة القادمة لن يتاح إلا إذا دعم المزوّد رمز دفع آمنًا (Token) ووافق المستخدم عليه. ربط الحساب البنكي مباشرة أو حفظ بياناته غير متاح حاليًا.</p>
         </section>
         <label for="playerId">معرّف اللاعب <span>(اختياري في المعاينة)</span></label><input class="form-input" id="playerId" name="playerId" inputmode="numeric" pattern="[0-9]{6,16}" minlength="6" maxlength="16" placeholder="6 إلى 16 رقمًا — أو اتركه فارغًا" autocomplete="off"><small class="input-help">لن يُحفظ هذا المعرّف. لا تدخل كلمة المرور أو رمز التحقق.</small>
-        <div class="checkout-summary"><span>عدد العناصر</span><strong id="checkoutCount">0</strong><span>المجموع التجريبي</span><strong id="checkoutTotal">0 د.ج</strong></div>
+        <div class="checkout-summary">
+          <span>عدد العناصر</span><strong id="checkoutCount">0</strong>
+          <span>المجموع قبل عمولة الخدمة</span><strong id="checkoutSubtotal">0 د.ج</strong>
+          <span id="checkoutCommissionLabel">عمولة خدمة BlueDrop (2%)</span><strong id="checkoutCommission">0 د.ج</strong>
+          <span>الإجمالي التقديري</span><strong id="checkoutTotal">0 د.ج</strong>
+        </div>
+        <small class="checkout-fee-note">رسوم مزوّد الدفع الفعلية غير مشمولة، وتُحدد فقط عند ربط مزوّد معتمد.</small>
         <button class="button button-primary full-width" id="submitOrder" type="submit">إنشاء طلب تجريبي</button>
       </form>
     </section>
