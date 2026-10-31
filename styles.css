@@ -691,3 +691,9 @@ img { max-width: 100%; display: block; }
   outline: 2px solid #ff9ca8;
   outline-offset: 3px;
 }
+
+
+/* Official Garena top-up links */
+.official-purchase-link { text-decoration: none; cursor: pointer; }
+.official-topup-cta { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+.official-topup-cta[hidden] { display: none !important; }
