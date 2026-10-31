@@ -1,5 +1,5 @@
-/* BlueDrop global commission policy.
- * All countries and merchants inherit 10% unless an explicit override is configured.
+/* BlueDrop global service commission policy.
+ * All countries and merchants inherit 2% unless an explicit override is configured.
  * Override precedence: merchant+country > merchant > country > global default.
  * Currency conversion and supplier wholesale costs are separate pricing inputs.
  */
@@ -7,8 +7,10 @@
   'use strict';
 
   const RULES = Object.freeze({
-    defaultPercent: 10,
-    countryPercent: Object.freeze({}),
+    defaultPercent: 2,
+    countryPercent: Object.freeze({
+      DZ: 2, MA: 2, TN: 2, EG: 2, SA: 2, AE: 2, FR: 2, DE: 2, GB: 2, US: 2
+    }),
     merchantPercent: Object.freeze({}),
     merchantCountryPercent: Object.freeze({})
   });
@@ -41,7 +43,7 @@
     const countryRate = validPercent(rules.countryPercent && rules.countryPercent[country]);
     if (countryRate !== null) return countryRate;
 
-    return validPercent(rules.defaultPercent) ?? 10;
+    return validPercent(rules.defaultPercent) ?? 2;
   }
 
   function calculate(basePrice, options = {}) {
