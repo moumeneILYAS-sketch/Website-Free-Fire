@@ -282,8 +282,17 @@
               <span class="payment-method-name">BaridiMob</span><small>مراجعة يدوية</small><b>محاكاة فقط</b>
             </label>
           </div>
-          <p class="payment-method-notice" id="paymentMethodNotice" aria-live="polite">الدفع بالبطاقة الذهبية غير متصل بعد. هذا الاختيار يحفظ نوع الوسيلة في الطلب التجريبي فقط.</p>
+          <p class="payment-method-notice" id="paymentMethodNotice" aria-live="polite">وسائل الدفع البنكية غير متصلة حاليًا؛ لا يتم تحصيل أي مبلغ في هذه النسخة.</p>
         </fieldset>
+        <section class="bank-link-panel" aria-labelledby="bankLinkTitle">
+          <div class="bank-link-heading">
+            <span class="bank-link-icon" aria-hidden="true">▣</span>
+            <div><strong id="bankLinkTitle">هل تريد استخدام بطاقتك البنكية الموجودة؟</strong><small>بطاقة CIB أو الذهبية (EDAHABIA)</small></div>
+            <span class="bank-link-status">قيد التفعيل</span>
+          </div>
+          <button class="bank-link-info-button" id="bankLinkInfoButton" type="button" aria-expanded="false" aria-controls="bankLinkInfo">كيف يعمل الربط الآمن؟</button>
+          <p class="bank-link-info" id="bankLinkInfo" hidden>عند تفعيل بوابة دفع معتمدة، سيُحوّلك BlueDrop إلى صفحة دفع آمنة تابعة لمزوّد الدفع لتستخدم بطاقتك الموجودة. لن نطلب رقم البطاقة أو الرقم السري أو رمز OTP داخل BlueDrop. حفظ البطاقة للمرة القادمة لن يتاح إلا إذا دعم المزوّد رمز دفع آمنًا (Token) ووافق المستخدم عليه. ربط الحساب البنكي مباشرة أو حفظ بياناته غير متاح حاليًا.</p>
+        </section>
         <label for="playerId">معرّف اللاعب <span>(اختياري في المعاينة)</span></label><input class="form-input" id="playerId" name="playerId" inputmode="numeric" pattern="[0-9]{6,16}" minlength="6" maxlength="16" placeholder="6 إلى 16 رقمًا — أو اتركه فارغًا" autocomplete="off"><small class="input-help">لن يُحفظ هذا المعرّف. لا تدخل كلمة المرور أو رمز التحقق.</small>
         <div class="checkout-summary"><span>عدد العناصر</span><strong id="checkoutCount">0</strong><span>المجموع التجريبي</span><strong id="checkoutTotal">0 د.ج</strong></div>
         <button class="button button-primary full-width" id="submitOrder" type="submit">إنشاء طلب تجريبي</button>
