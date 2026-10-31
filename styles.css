@@ -779,3 +779,19 @@ html[dir="ltr"] .category-card { text-align:left; }
 html[dir="ltr"] .site-info-grid > div { text-align:left; }
 html[dir="ltr"] .site-footer .footer-inner { direction:ltr; }
 @media (max-width:600px) { .language-switcher { min-height:31px; padding:3px 5px; gap:3px; } .language-switcher select { max-width:76px; font-size:8px; } }
+
+
+/* BlueDrop service commission and deposit quote */
+.wallet-commission-note { display:block; color:#83e2c1; font-size:9px; font-weight:800; }
+.wallet-deposit-input { width:100%; min-height:35px; padding:8px 10px; border:1px solid #315575; border-radius:8px; background:#071528; color:#eef7ff; font:inherit; font-size:11px; direction:ltr; text-align:left; }
+.wallet-deposit-input:focus { outline:2px solid #52c8df; outline-offset:1px; }
+.wallet-deposit-breakdown { display:grid; grid-template-columns:1fr auto; gap:7px 10px; padding:9px; border:1px solid #284968; border-radius:9px; background:#071528; color:#a9bdd5; font-size:9px; }
+.wallet-deposit-breakdown strong { color:#d9efff; font-variant-numeric:tabular-nums; }
+.wallet-deposit-breakdown strong:last-child { color:#83e2c1; font-size:11px; }
+.wallet-deposit-preview-note { color:#8ea8c5; font-size:8px; line-height:1.8; }
+.commission-breakdown { display:grid; gap:7px; margin-bottom:10px; padding:10px 0; border-top:1px solid rgb(125 165 202 / 15%); border-bottom:1px solid rgb(125 165 202 / 15%); }
+.commission-breakdown > div { display:flex; align-items:center; justify-content:space-between; gap:12px; color:#9bb0ca; font-size:10px; }
+.commission-breakdown strong { color:#cce2f7; font-size:11px; font-variant-numeric:tabular-nums; }
+.commission-breakdown > div:nth-child(2) strong { color:#83e2c1; }
+.checkout-fee-note { display:block; margin:8px 0 12px; color:#8ea8c5; font-size:9px; line-height:1.8; }
+@media (max-width:600px) { .wallet-deposit-breakdown { font-size:8px; } }
