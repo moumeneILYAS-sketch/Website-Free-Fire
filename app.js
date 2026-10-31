@@ -148,6 +148,19 @@
       });
       const slot = $('googleSignInSlot');
       slot.textContent = '';
+      slot.classList.remove('is-ready');
+
+      // Keep Google's iframe completely invisible until its first load finishes.
+      const revealWhenLoaded = new MutationObserver(() => {
+        const frame = slot.querySelector('iframe');
+        if (!frame) return;
+        revealWhenLoaded.disconnect();
+        frame.addEventListener('load', () => {
+          slot.classList.add('is-ready');
+        }, { once: true });
+      });
+      revealWhenLoaded.observe(slot, { childList: true, subtree: true });
+
       window.google.accounts.id.renderButton(slot, {
         type: 'icon',
         theme: 'filled_black',
