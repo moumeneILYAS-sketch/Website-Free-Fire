@@ -589,3 +589,47 @@ img { max-width: 100%; display: block; }
   display: block;
   color-scheme: dark;
 }
+
+
+/* Crop the transparent padding area around Google's cross-origin button iframe. */
+.google-signin-slot {
+  box-sizing: content-box !important;
+  width: 208px !important;
+  height: 32px !important;
+  min-width: 208px !important;
+  min-height: 32px !important;
+  max-width: 208px !important;
+  max-height: 32px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.google-signin-slot > div {
+  width: 228px !important;
+  height: 44px !important;
+  min-width: 228px !important;
+  min-height: 44px !important;
+  transform: translate(-10px, -6px) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.google-signin-slot iframe {
+  display: block !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+@media (max-width: 600px) {
+  .google-signin-slot {
+    width: 208px !important;
+    min-width: 208px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+  .google-signin-slot > div {
+    transform: translate(-10px, -6px) !important;
+  }
+}
