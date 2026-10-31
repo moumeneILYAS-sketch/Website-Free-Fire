@@ -20,6 +20,16 @@ function parsed(res) {
   return JSON.parse(res.body || '{}');
 }
 
+test('Vercel npm commands sanitize pnpm-only cache-dir and Node is pinned', () => {
+  const root = path.resolve(__dirname, '..');
+  const config = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  assert.match(config.installCommand, /env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm install/);
+  assert.match(config.buildCommand, /env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm run vercel-build/);
+  assert.equal(config.outputDirectory, 'public');
+  assert.equal(pkg.engines.node, '24.x');
+});
+
 test('Vercel product endpoint returns the bundled demo catalog', async () => {
   const previous = process.env.DATABASE_URL;
   delete process.env.DATABASE_URL;
