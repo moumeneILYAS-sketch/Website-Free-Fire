@@ -287,7 +287,7 @@ async function createDemoOrder(req, res) {
     const countryCode = commissionPolicy.normalizeCountryCode(payload.countryCode);
     const normalized = validateOrderItems(payload.items, products, { countryCode });
     const paymentMethod = String(payload.paymentMethod || 'edahabia');
-    if (!['cib', 'edahabia', 'visa', 'mastercard', 'paypal', 'baridimob'].includes(paymentMethod)) {
+    if (!['cib', 'edahabia', 'visa', 'mastercard', 'paypal', 'baridimob', 'other_bank'].includes(paymentMethod)) {
       return sendJson(res, 400, { ok: false, error: 'وسيلة الدفع التجريبية غير صالحة.' });
     }
     const requestHash = crypto.createHash('sha256')
