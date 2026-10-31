@@ -277,19 +277,24 @@
       const category = escapeHtml(CATEGORY_LABELS[product.category] || 'منتج');
       const description = escapeHtml(product.description);
       const isGiftCard = Number.isFinite(Number(product.faceValue)) && Boolean(product.faceCurrency);
+      const isOfficialDiamondTopup = product.category === 'diamonds';
       const price = isGiftCard
         ? `${Number(product.faceValue)} ${escapeHtml(product.faceCurrency)}`
         : product.priceDisplay
           ? escapeHtml(product.priceDisplay)
           : formatPrice(Number(product.price));
-      const priceNote = isGiftCard
-        ? `قيمة اسمية • ${escapeHtml(product.regionLabel || 'منطقة محددة')}`
-        : product.priceNote
-          ? escapeHtml(product.priceNote)
-          : 'سعر توضيحي';
-      const cartButton = product.purchasable === false
-        ? `<button class="add-button" type="button" disabled aria-label="${name} — غير متاح للشراء" title="عنصر للعرض فقط">—</button>`
-        : `<button class="add-button" type="button" data-add="${id}" aria-label="إضافة ${name} إلى السلة" title="أضف إلى السلة">+</button>`;
+      const priceNote = isOfficialDiamondTopup
+        ? 'سعر استرشادي • السعر النهائي لدى Garena'
+        : isGiftCard
+          ? `قيمة اسمية • ${escapeHtml(product.regionLabel || 'منطقة محددة')}`
+          : product.priceNote
+            ? escapeHtml(product.priceNote)
+            : 'سعر توضيحي';
+      const cartButton = isOfficialDiamondTopup
+        ? `<a class="add-button official-purchase-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" aria-label="فتح قناة Garena الرسمية لشحن ${name}" title="تحقق واشترِ من Garena الرسمي">↗</a>`
+        : product.purchasable === false
+          ? `<button class="add-button" type="button" disabled aria-label="${name} — غير متاح للشراء" title="عنصر للعرض فقط">—</button>`
+          : `<button class="add-button" type="button" data-add="${id}" aria-label="إضافة ${name} إلى السلة" title="أضف إلى السلة">+</button>`;
       return `
         <article class="product-card stagger-${Math.min(index, 8)}">
           <div class="product-visual category-${escapeHtml(product.category)}">
@@ -378,8 +383,9 @@
       $('closeCart').focus();
     } else if (which === 'product') {
       productDialog.hidden = false;
+      const officialLink = $('dialogOfficialTopupLink');
       const action = $('dialogAddToCart');
-      (action.disabled ? productDialog.querySelector('.dialog-close') : action).focus();
+      (officialLink && !officialLink.hidden ? officialLink : action.disabled ? productDialog.querySelector('.dialog-close') : action).focus();
     } else if (which === 'checkout') {
       checkoutDialog.hidden = false;
       $('playerId').focus();
@@ -427,12 +433,21 @@
     $('dialogProductPrice').textContent = isGiftCard
       ? `${Number(product.faceValue)} ${product.faceCurrency}`
       : (product.priceDisplay || formatPrice(Number(product.price)));
-    $('dialogPriceNote').textContent = isGiftCard
-      ? `قيمة اسمية • ${product.regionLabel || 'منطقة محددة'} — عرض فقط`
-      : (product.priceNote || 'سعر توضيحي');
+    const isOfficialDiamondTopup = product.category === 'diamonds';
+    $('dialogPriceNote').textContent = isOfficialDiamondTopup
+      ? 'سعر استرشادي • السعر النهائي والباقة المتاحة يظهران في Garena'
+      : isGiftCard
+        ? `قيمة اسمية • ${product.regionLabel || 'منطقة محددة'} — عرض فقط`
+        : (product.priceNote || 'سعر توضيحي');
     const addButton = $('dialogAddToCart');
+    const officialLink = $('dialogOfficialTopupLink');
+    officialLink.hidden = !isOfficialDiamondTopup;
+    addButton.hidden = isOfficialDiamondTopup;
     addButton.disabled = product.purchasable === false;
     addButton.textContent = product.purchasable === false ? 'للعرض فقط — غير متاح للشراء' : 'أضف إلى السلة';
+    $('dialogProductNote').textContent = isOfficialDiamondTopup
+      ? 'سيتم فتح PagoStore الرسمي من Garena. اختر الباقة المتاحة لبلدك وتحقق من السعر قبل الدفع، واستعن بولي أمرك.'
+      : 'عنصر للعرض فقط — لا يوجد مورد رسمي مؤكد أو تسليم من BlueDrop.';
     $('dialogProductEmoji').textContent = product.emoji || '✦';
     $('dialogProductArt').className = `dialog-product-art category-${product.category}`;
     openOverlay('product');
