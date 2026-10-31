@@ -3,6 +3,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
+const fs = require('node:fs');
+const path = require('node:path');
 const { handleProducts, handleHealth, handleOrder } = require('../lib/vercel-api');
 const { handleGoogleAuth, encryptSession, decryptSession, verifyGoogleCredential } = require('../lib/google-auth');
 
@@ -98,9 +100,6 @@ test('Vercel API rejects unsupported methods', async () => {
   assert.equal(res.headers.allow, 'GET');
 });
 
-
-const fs = require('node:fs');
-const path = require('node:path');
 
 test('Vercel build output contains the home page and every referenced local asset', () => {
   const root = path.resolve(__dirname, '..');
