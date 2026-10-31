@@ -126,6 +126,9 @@ function validateOrderItems(input, products) {
     if (!product) {
       throw Object.assign(new Error('أحد المنتجات غير متاح.'), { statusCode: 400 });
     }
+    if (product.purchasable === false) {
+      throw Object.assign(new Error('هذه البطاقة للعرض فقط ولا يمكن طلبها حاليًا.'), { statusCode: 400 });
+    }
     const combined = (merged.get(productId) || 0) + quantity;
     if (combined > 20) {
       throw Object.assign(new Error('الحد الأقصى التجريبي هو 20 من كل عنصر.'), { statusCode: 400 });
