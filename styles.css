@@ -697,3 +697,15 @@ img { max-width: 100%; display: block; }
 .official-purchase-link { text-decoration: none; cursor: pointer; }
 .official-topup-cta { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
 .official-topup-cta[hidden] { display: none !important; }
+
+
+/* Safe customer bank-card information panel */
+.bank-link-panel { margin: 14px 0 18px; padding: 13px; border: 1px solid #2b4769; border-radius: 12px; background: linear-gradient(145deg,#0d2440,#091a30); }
+.bank-link-heading { display:flex; align-items:center; gap:10px; }
+.bank-link-icon { width:34px; height:34px; flex:0 0 34px; display:grid; place-items:center; border-radius:9px; background:#15385d; color:#9bd8ff; font-size:17px; }
+.bank-link-heading > div { display:grid; gap:2px; min-width:0; flex:1; }
+.bank-link-heading strong { color:#eaf5ff; font-size:10px; }
+.bank-link-heading small { color:#829bb9; font-size:8px; }
+.bank-link-status { padding:3px 7px; border-radius:20px; background:#302819; color:#f3d9a2; font-size:8px; white-space:nowrap; }
+.bank-link-info-button { margin-top:11px; padding:6px 0; border:0; background:transparent; color:#83c9ff; font-size:9px; font-weight:800; cursor:pointer; }
+.bank-link-info { margin:8px 0 0; padding:10px; border-radius:9px; background:#071528; color:#a9bdd5; font-size:9px; line-height:2; }
