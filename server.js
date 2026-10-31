@@ -45,6 +45,7 @@ const STATIC_FILES = new Map([
   ['/styles.css', path.join(ROOT, 'styles.css')],
   ['/app.js', path.join(ROOT, 'app.js')],
   ['/catalog.js', path.join(ROOT, 'catalog.js')],
+  ['/i18n.js', path.join(ROOT, 'i18n.js')],
   ['/favicon.svg', path.join(ROOT, 'public', 'favicon.svg')],
   ['/admin/admin.css', path.join(ROOT, 'admin', 'admin.css')],
   ['/admin/admin.js', path.join(ROOT, 'admin', 'admin.js')]
