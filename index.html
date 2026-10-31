@@ -48,24 +48,41 @@
     </button>
     <div class="google-user-controls" id="googleUserControls" hidden>
       <span class="google-account-name" id="googleAccountName"></span>
-      <details class="wallet-dropdown" id="walletDropdown">
-        <summary class="wallet-summary" aria-label="فتح محفظتي ورصيدي">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H19v15H6.5A2.5 2.5 0 0 1 4 16.5z"/><path d="M4 7h15M15.5 12h4M16.5 12v.1"/></svg>
-          <span>محفظتي</span>
-          <strong id="walletBalance">0 دج</strong>
-        </summary>
-        <div class="wallet-dropdown-panel">
-          <small>رصيدك في BlueDrop</small>
-          <strong id="walletPanelBalance">0 دج</strong>
-          <span class="wallet-demo-note">رصيد تجريبي — لا توجد إيداعات مؤكدة بعد</span>
-          <button class="wallet-deposit-button" id="walletDepositButton" type="button">إيداع رصيد</button>
-          <small class="wallet-security-note">سيظهر الرصيد بعد تأكيد الدفع عبر بوابة معتمدة.</small>
-        </div>
-      </details>
+
       <button class="google-signout" id="googleSignOut" type="button">خروج</button>
     </div>
     <small class="google-auth-hint" id="googleAuthHint" aria-live="polite">تسجيل Google قيد الإعداد</small>
   </div>
+  <details class="wallet-dropdown" id="walletDropdown" hidden>
+    <summary class="wallet-summary" aria-label="فتح المحفظة والعملة ووسائل الدفع" title="المحفظة">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H19v15H6.5A2.5 2.5 0 0 1 4 16.5z"/><path d="M4 7h15M15.5 12h4M16.5 12v.1"/></svg>
+      <span class="wallet-summary-badge" id="walletBalance">0</span>
+    </summary>
+    <div class="wallet-dropdown-panel">
+      <div class="wallet-panel-heading"><strong>محفظتي</strong><small id="walletCurrencyLabel">الجزائر • DZD</small></div>
+      <small>رصيد BlueDrop</small>
+      <strong id="walletPanelBalance">0 دج</strong>
+      <span class="wallet-demo-note">الرصيد التجريبي — لا توجد إيداعات مؤكدة</span>
+      <label class="wallet-country-label" for="walletCountrySelect">بلدك أو منطقة حسابك</label>
+      <select id="walletCountrySelect" class="wallet-country-select">
+        <option value="DZ">الجزائر — DZD</option>
+        <option value="MA">المغرب — MAD</option>
+        <option value="TN">تونس — TND</option>
+        <option value="EG">مصر — EGP</option>
+        <option value="SA">السعودية — SAR</option>
+        <option value="AE">الإمارات — AED</option>
+        <option value="FR">فرنسا — EUR</option>
+        <option value="DE">ألمانيا — EUR</option>
+        <option value="GB">المملكة المتحدة — GBP</option>
+        <option value="US">الولايات المتحدة — USD</option>
+      </select>
+      <small class="wallet-method-title">وسائل الدفع المحلية المعروفة</small>
+      <div class="wallet-method-list" id="walletPaymentMethods"></div>
+      <span class="wallet-method-status">غير مفعّلة في BlueDrop حاليًا</span>
+      <button class="wallet-deposit-button" id="walletDepositButton" type="button">إيداع رصيد</button>
+      <small class="wallet-security-note">لا تدخل بيانات البطاقة أو الحساب البنكي هنا. الإيداع يحتاج بوابة دفع مرخّصة.</small>
+    </div>
+  </details>
   <button class="icon-action search-toggle" id="focusSearch" type="button" aria-label="البحث عن منتج" title="البحث (Ctrl+K)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.2 4.2"></path></svg>
         </button>
