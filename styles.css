@@ -709,3 +709,27 @@ img { max-width: 100%; display: block; }
 .bank-link-status { padding:3px 7px; border-radius:20px; background:#302819; color:#f3d9a2; font-size:8px; white-space:nowrap; }
 .bank-link-info-button { margin-top:11px; padding:6px 0; border:0; background:transparent; color:#83c9ff; font-size:9px; font-weight:800; cursor:pointer; }
 .bank-link-info { margin:8px 0 0; padding:10px; border-radius:9px; background:#071528; color:#a9bdd5; font-size:9px; line-height:2; }
+
+
+/* BlueDrop account wallet preview */
+.google-user-controls { max-width: none; }
+.wallet-dropdown { position: relative; display: inline-flex; flex: 0 0 auto; }
+.wallet-summary { display:inline-flex; align-items:center; gap:5px; min-height:29px; padding:4px 7px; border:1px solid #315a7d; border-radius:8px; background:#0a2039; color:#cceaff; list-style:none; cursor:pointer; font-size:9px; font-weight:800; }
+.wallet-summary::-webkit-details-marker { display:none; }
+.wallet-summary svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.7; }
+.wallet-summary strong { color:#83e2c1; font-size:9px; }
+.wallet-dropdown[open] .wallet-summary { border-color:#62b8ff; background:#123353; }
+.wallet-dropdown-panel { position:absolute; z-index:80; top:calc(100% + 9px); inset-inline-end:0; width:220px; display:grid; gap:8px; padding:13px; border:1px solid #315575; border-radius:12px; background:#0a1a30; box-shadow:0 18px 40px rgb(0 0 0 / 35%); white-space:normal; }
+.wallet-dropdown-panel > small { color:#8ea8c5; font-size:8px; line-height:1.8; }
+.wallet-dropdown-panel > strong { color:#72e0bd; font-size:20px; }
+.wallet-demo-note { padding:5px 7px; border-radius:7px; background:#302819; color:#f3d9a2; font-size:8px; }
+.wallet-deposit-button { min-height:34px; padding:7px 10px; border:1px solid #3477ad; border-radius:8px; background:#14518a; color:#fff; font-size:9px; font-weight:800; cursor:pointer; }
+.wallet-deposit-button:hover { background:#1b68aa; }
+.wallet-security-note { color:#8ea8c5; font-size:8px; }
+@media (max-width:600px) {
+  .google-user-controls { gap:5px; padding:4px 5px; }
+  .google-account-name { max-width:70px; }
+  .wallet-summary { gap:3px; padding:4px 5px; font-size:8px; }
+  .wallet-summary span { display:none; }
+  .wallet-dropdown-panel { width:205px; }
+}
