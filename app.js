@@ -96,7 +96,7 @@
 
   function languageForCountry(countryCode) {
     const map = {
-      DZ: 'ar', MA: 'fr', TN: 'fr', EG: 'ar', SA: 'ar', AE: 'ar',
+      DZ: 'ar', MA: 'ar', TN: 'ar', EG: 'ar', SA: 'ar', AE: 'ar',
       FR: 'fr', DE: 'de', GB: 'en', US: 'en'
     };
     return map[countryCode] || 'en';
