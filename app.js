@@ -615,7 +615,9 @@
       ? `${tr('سعر استرشادي • السعر النهائي والباقة المتاحة يظهران في Garena')} • ${tr('يشمل عمولة خدمة')} ${productQuote.commissionPercent}%`
       : isGiftCard
         ? `${tr('قيمة اسمية •')} ${tr(product.regionLabel || 'منطقة محددة')} — ${tr('للعرض فقط')}`
-        : `${tr(product.priceNote || 'سعر توضيحي')} • ${tr('يشمل عمولة خدمة')} ${productQuote ? productQuote.commissionPercent : commissionPercent()}%`;
+        : productQuote
+          ? `${tr(product.priceNote || 'سعر توضيحي')} • ${tr('يشمل عمولة خدمة')} ${productQuote.commissionPercent}%`
+          : tr(product.priceNote || 'للعرض فقط');
     const addButton = $('dialogAddToCart');
     const officialLink = $('dialogOfficialTopupLink');
     officialLink.hidden = !isOfficialDiamondTopup;
