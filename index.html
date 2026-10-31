@@ -38,15 +38,19 @@
 
       <div class="header-actions">
   <div class="google-auth-wrap" id="googleAuthWrap">
-    <button class="google-signin-fallback" id="googleSignInFallback" type="button" disabled title="يتطلب إعداد بيانات Google OAuth">
-      <span class="google-mark" aria-hidden="true">G</span><span>Google</span>
+    <button class="google-logo-trigger" id="googleSignInFallback" type="button" disabled aria-label="تسجيل الدخول باستخدام Google" title="تسجيل الدخول باستخدام Google">
+      <svg class="google-logo" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6v5h6.5c3.9-3.6 6.1-8.7 6.1-14.7z"/>
+        <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.5-5c-1.8 1.2-4.1 2-7 2-5.4 0-10-3.6-11.7-8.5H5.6v5.2A20 20 0 0 0 24 44z"/>
+        <path fill="#FBBC05" d="M12.3 27.6a12 12 0 0 1 0-7.2v-5.2H5.6a20 20 0 0 0 0 17.6l6.7-5.2z"/>
+        <path fill="#EA4335" d="M24 11.9c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.9 29.5 4 24 4A20 20 0 0 0 5.6 15.2l6.7 5.2c1.7-4.9 6.3-8.5 11.7-8.5z"/>
+      </svg>
     </button>
-    <div id="googleSignInSlot" class="google-signin-slot" hidden></div>
     <div class="google-user-controls" id="googleUserControls" hidden>
       <span class="google-account-name" id="googleAccountName"></span>
       <button class="google-signout" id="googleSignOut" type="button">خروج</button>
     </div>
-    <small class="google-auth-hint" id="googleAuthHint">تسجيل Google قيد الإعداد</small>
+    <small class="google-auth-hint" id="googleAuthHint" aria-live="polite">تسجيل Google قيد الإعداد</small>
   </div>
   <button class="icon-action search-toggle" id="focusSearch" type="button" aria-label="البحث عن منتج" title="البحث (Ctrl+K)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.2 4.2"></path></svg>
