@@ -471,7 +471,6 @@
             <div class="product-footer">
               <div class="product-price"><strong>${price}</strong><small>${priceNote}</small></div>
               <div class="product-actions">
-                <button class="details-button" type="button" data-details="${id}" aria-label="${tr('تفاصيل')} ${name}" title="التفاصيل">↗</button>
                 ${cartButton}
               </div>
             </div>
