@@ -7,6 +7,7 @@ const crypto = require('node:crypto');
 const catalogSeed = require('./catalog.js');
 const { handleGoogleAuth } = require('./lib/google-auth.js');
 const commissionPolicy = require('./commission.js');
+const shop2topup = require('./lib/shop2topup.js');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
@@ -597,6 +598,24 @@ function createServer() {
     }
 
     if (url.pathname === '/api/auth/google') return handleGoogleAuth(req, res);
+
+    if (url.pathname === '/api/supplier/status' && req.method === 'GET') {
+      try { return sendJson(res, 200, { ok: true, supplier: 'SHOP2TOPUP', ...(await shop2topup.getStatus()) }); }
+      catch (error) {
+        return sendJson(res, error.code === 'SUPPLIER_NOT_CONFIGURED' ? 503 : 502, {
+          ok: false, supplier: 'SHOP2TOPUP', connected: false,
+          error: error.code === 'SUPPLIER_NOT_CONFIGURED' ? 'لم يتم إعداد مفاتيح المورد في إعدادات الخادم.' : 'تعذر التحقق من اتصال المورد.'
+        });
+      }
+    }
+    if (url.pathname === '/api/supplier/catalog' && req.method === 'GET') {
+      try { return sendJson(res, 200, { ok: true, ...(await shop2topup.getFreeFireCatalog()) }); }
+      catch (error) {
+        return sendJson(res, error.code === 'SUPPLIER_NOT_CONFIGURED' ? 503 : 502, {
+          ok: false, error: error.code === 'SUPPLIER_NOT_CONFIGURED' ? 'لم يتم إعداد مفاتيح المورد في إعدادات الخادم.' : 'كتالوج المورد غير متاح حاليًا.'
+        });
+      }
+    }
 
     if (url.pathname === '/api/health' && req.method === 'GET') {
       let database = 'not-configured';
