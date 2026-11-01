@@ -795,3 +795,30 @@ html[dir="ltr"] .site-footer .footer-inner { direction:ltr; }
 .commission-breakdown > div:nth-child(2) strong { color:#83e2c1; }
 .checkout-fee-note { display:block; margin:8px 0 12px; color:#8ea8c5; font-size:9px; line-height:1.8; }
 @media (max-width:600px) { .wallet-deposit-breakdown { font-size:8px; } }
+
+
+/* Free Fire player center and support tools */
+.player-center-section { background: linear-gradient(180deg,#071326,#091a30); border-block: 1px solid rgb(132 177 232 / 7%); }
+.player-tools-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.player-tool-card,.player-guide-card { min-width:0; padding:22px; border:1px solid var(--line); border-radius:18px; background:linear-gradient(145deg,#102541,#09182c); }
+.player-tool-icon { width:44px;height:44px;display:grid;place-items:center;border:1px solid #2c4f77;border-radius:13px;background:#102b4b;font-size:22px; }
+.player-tool-card h3,.player-guide-card h3 { margin:13px 0 6px;font-size:14px; }
+.player-tool-card p,.player-guide-card p { color:#91a8c5;font-size:10px;line-height:2; }
+.player-tool-card label { display:block;margin:13px 0 6px;color:#b7cce5;font-size:10px;font-weight:800; }
+.player-tool-card input,.player-tool-card select { width:100%;min-height:43px;padding:9px 12px;border:1px solid #29496c;border-radius:10px;background:#07172b;color:#eff7ff;outline:none; }
+.player-tool-card input:focus,.player-tool-card select:focus { border-color:#65b5ff;box-shadow:0 0 0 3px rgb(54 141 255 / 15%); }
+.player-tool-card .button { margin-top:10px; }
+.player-tool-card small { display:block;margin-top:10px;color:#758eac;font-size:9px;line-height:1.8; }
+.uid-check-result { min-height:24px;margin:9px 0 0!important;color:#9bb7d6!important; }
+.uid-check-result[data-status="valid"] { color:var(--success)!important; }
+.uid-check-result[data-status="invalid"] { color:var(--warning)!important; }
+.region-guidance { margin-top:12px;padding:12px;border:1px solid #274668;border-radius:11px;background:#0a1b30;color:#a9c3df;font-size:10px;line-height:1.9; }
+.player-guide-list { padding-inline-start:19px;color:#9ab0cb;font-size:10px;line-height:2.1; }
+.player-guide-list strong { color:#d9eaff; }
+.player-guide-link { display:inline-block;margin-top:8px;color:#8ecbff;font-size:10px;font-weight:800; }
+.player-guide-section { background:#081426; }
+.player-guide-grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px; }
+.player-guide-card > span { font-size:25px; }
+.support-center-section { background:#071326;border-top:1px solid var(--line); }
+@media(max-width:900px) { .player-tools-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .player-guide-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .player-tools-grid,.player-guide-grid { grid-template-columns:1fr; } .player-tool-card,.player-guide-card { padding:18px; } }

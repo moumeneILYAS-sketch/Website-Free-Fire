@@ -36,6 +36,8 @@
         <a class="nav-link" href="#shop">المتجر</a>
         <a class="nav-link" href="#benefits">لماذا BlueDrop؟</a>
         <a class="nav-link" href="#faq">الأسئلة الشائعة</a>
+        <a class="nav-link" href="#player-center">مركز اللاعب</a>
+        <a class="nav-link" href="#player-guide">دليل اللاعب</a>
       </nav>
 
       <div class="header-actions">
@@ -221,6 +223,70 @@
         <div class="product-grid" id="productGrid" aria-live="polite" aria-busy="false"></div>
         <div class="empty-state" id="emptyState" hidden><span class="empty-art" aria-hidden="true">⌕</span><h3>لم نجد ما تبحث عنه</h3><p>جرّب كلمة بحث مختلفة أو اعرض كل المنتجات.</p><button class="button button-ghost" id="resetCatalog" type="button">عرض كل المنتجات</button></div>
         <div class="catalog-footnote"><span aria-hidden="true">ⓘ</span><div><p>الجواهر: زر الشراء يفتح PagoStore الرسمي من Garena في تبويب جديد. السعر النهائي والباقة المتاحة يعرضهما الموقع الرسمي حسب البلد؛ لا يتم الدفع داخل BlueDrop.</p><p>العضويات والبطاقات والأزياء والشخصيات والإكسسوارات الأخرى للعرض فقط حتى يتوفر لها مورد رسمي يمكن التحقق منه.</p><p>تنبيه البطاقات: بطاقات Google Play وApple المعروضة بالدولار الأمريكي مخصّصة لمنطقة الولايات المتحدة فقط. يجب مطابقة منطقة البطاقة مع بلد حسابك؛ وهي للعرض فقط حاليًا ولا يتوفر بيع أو تسليم فعلي.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section player-center-section" id="player-center" aria-labelledby="playerCenterTitle">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div><span class="section-eyebrow">أدوات اللاعب</span><h2 id="playerCenterTitle">مركز <span>Free Fire</span></h2><p>أدوات إرشادية تساعدك على معرفة معرّف اللاعب ومنطقة حسابك دون طلب بيانات الدخول.</p></div>
+        </div>
+        <div class="player-tools-grid">
+          <article class="player-tool-card reveal">
+            <span class="player-tool-icon">🆔</span><h3>فحص تنسيق UID</h3>
+            <p>أدخل المعرّف الرقمي للاعب للتحقق من تنسيقه فقط. لا نتصل بخوادم Garena ولا نتحقق من وجود الحساب.</p>
+            <label for="uidCheckInput">معرّف اللاعب (UID)</label>
+            <input id="uidCheckInput" type="text" inputmode="numeric" autocomplete="off" maxlength="16" placeholder="مثال: 123456789">
+            <button class="button button-primary" id="uidCheckButton" type="button">تحقق من التنسيق</button>
+            <p class="uid-check-result" id="uidCheckResult" role="status" aria-live="polite">اكتب من 6 إلى 16 رقمًا.</p>
+            <small>لا تدخل كلمة المرور أو رمز التحقق مطلقًا.</small>
+          </article>
+          <article class="player-tool-card reveal reveal-delay-1">
+            <span class="player-tool-icon">🌍</span><h3>دليل المنطقة والسيرفر</h3>
+            <p>اختر بلد حسابك لعرض تذكير إرشادي. هذا الاختيار لا يغيّر لغة الموقع أو عملته ولا يحدد سيرفر حسابك فعليًا.</p>
+            <label for="gameRegionSelect">بلد / منطقة الحساب</label>
+            <select id="gameRegionSelect">
+              <option value="DZ">الجزائر</option><option value="MA">المغرب</option><option value="TN">تونس</option><option value="EG">مصر</option><option value="ME">الشرق الأوسط</option><option value="EU">أوروبا</option><option value="US">أمريكا الشمالية</option><option value="OTHER">منطقة أخرى</option>
+            </select>
+            <div class="region-guidance" id="regionGuidance" aria-live="polite">تحقق من المنطقة الظاهرة في حسابك والقنوات الرسمية قبل استخدام أي بطاقة أو عرض.</div>
+            <small>لا تستخدم VPN لتغيير المنطقة أو تجاوز قيود الحساب.</small>
+          </article>
+          <article class="player-tool-card reveal reveal-delay-2">
+            <span class="player-tool-icon">📘</span><h3>دليل اللاعب السريع</h3>
+            <ul class="player-guide-list">
+              <li><strong>الجواهر:</strong> تحقق من الباقة والسعر النهائي داخل PagoStore الرسمي.</li>
+              <li><strong>العضويات:</strong> راجع المدة والمكافآت وتوفرها في منطقتك.</li>
+              <li><strong>Booyah Pass:</strong> تحقق من الموسم الحالي ومحتواه داخل اللعبة.</li>
+              <li><strong>الأزياء والرقصات:</strong> قد يتغير توفرها حسب الفعاليات والتحديثات.</li>
+            </ul>
+            <a class="player-guide-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer">قناة Garena الرسمية للجواهر ↗</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section player-guide-section" id="player-guide" aria-labelledby="playerGuideTitle">
+      <div class="container">
+        <div class="center-heading reveal"><span class="section-eyebrow">معلومات وحماية</span><h2 id="playerGuideTitle">العب بوعي، واحمِ <span>حسابك</span></h2><p>إرشادات عامة للاستخدام الآمن وفهم عناصر Free Fire.</p></div>
+        <div class="player-guide-grid">
+          <article class="player-guide-card"><span>💎</span><h3>الجواهر والشحن</h3><p>استخدم القنوات الرسمية فقط، وراجع السعر والبلد ومعرّف اللاعب قبل تأكيد أي عملية خارج BlueDrop.</p></article>
+          <article class="player-guide-card"><span>🎫</span><h3>العضويات والبطاقات</h3><p>تأكد من مدة الاشتراك والمنطقة وشروط الاستحقاق. لا تفترض أن بطاقة منطقة معينة تعمل في كل البلدان.</p></article>
+          <article class="player-guide-card"><span>🛡️</span><h3>حماية الحساب</h3><p>لا تشارك كلمة المرور أو رموز التحقق أو ملفات تسجيل الدخول. لا تشترِ الحسابات ولا تثبّت ملفات مجهولة تدّعي منح مزايا.</p></article>
+          <article class="player-guide-card"><span>🔄</span><h3>التحديثات والفعاليات</h3><p>المحتوى والمكافآت تتغير. راجع إعلانات اللعبة الرسمية داخل اللعبة أو قنوات Garena المعتمدة.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section support-center-section" id="support-center" aria-labelledby="supportCenterTitle">
+      <div class="container faq-layout">
+        <div class="faq-intro reveal"><span class="section-eyebrow">نحتاج مساعدتك؟</span><h2 id="supportCenterTitle">مركز <span>المساعدة</span></h2><p>إجابات سريعة عن المعرّف والمنطقة والطلبات التجريبية.</p></div>
+        <div class="faq-list reveal reveal-delay-1">
+          <details><summary>أين أجد UID الخاص بي؟<span aria-hidden="true"></span></summary><p>افتح ملفك الشخصي داخل Free Fire وابحث عن رقم المعرّف المعروض بجانب معلومات اللاعب. تختلف واجهة اللعبة حسب الإصدار. لا تشارك بيانات تسجيل الدخول.</p></details>
+          <details><summary>هل فحص UID يؤكد أن الحساب موجود؟<span aria-hidden="true"></span></summary><p>لا. الأداة تفحص أن الإدخال يتكون من 6 إلى 16 رقمًا فقط. لا يوجد اتصال بخوادم اللعبة ولا يتم استرجاع اسم اللاعب.</p></details>
+          <details><summary>هل يمكن تغيير السيرفر من BlueDrop؟<span aria-hidden="true"></span></summary><p>لا. اختيار المنطقة هنا إرشادي فقط. منطقة الحساب الفعلية يحددها حساب اللعبة وخدمات Garena، ولا ينبغي محاولة تجاوز قيود المناطق.</p></details>
+          <details><summary>هل أرسل كلمة المرور لتأكيد الشحن؟<span aria-hidden="true"></span></summary><p>لا مطلقًا. لا يطلب BlueDrop كلمة مرور اللعبة أو رموز التحقق أو بيانات الدفع. إذا طلبها شخص فهذه علامة خطر.</p></details>
+          <details><summary>هل الطلبات والمنتجات متاحة فعليًا؟<span aria-hidden="true"></span></summary><p>لا. BlueDrop نموذج عرض فقط. لا يتم تحصيل الأموال أو تسليم الجواهر أو الأكواد أو العضويات من خلال الموقع.</p></details>
+        </div>
       </div>
     </section>
 

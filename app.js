@@ -776,6 +776,32 @@
     }
   }
 
+  function checkPlayerUid() {
+    const input = $('uidCheckInput');
+    const result = $('uidCheckResult');
+    const value = input.value.trim();
+    const valid = /^[0-9]{6,16}$/.test(value);
+    result.textContent = valid
+      ? tr('تنسيق UID صحيح مبدئيًا. لم يتم التحقق من الحساب لدى Garena.')
+      : tr('تنسيق غير صحيح: استخدم من 6 إلى 16 رقمًا فقط.');
+    result.dataset.status = valid ? 'valid' : 'invalid';
+    input.setAttribute('aria-invalid', String(Boolean(value) && !valid));
+  }
+
+  function updateGameRegionGuidance() {
+    const notes = {
+      DZ: 'الجزائر: تحقق من بلد حسابك والأسعار والتوفر عبر القنوات الرسمية.',
+      MA: 'المغرب: قد تختلف الباقات والأسعار ووسائل الدفع عن الجزائر.',
+      TN: 'تونس: راجع المنطقة والتوفر داخل اللعبة والقنوات الرسمية.',
+      EG: 'مصر: تحقق من شروط المنطقة والأسعار قبل أي عملية.',
+      ME: 'الشرق الأوسط: هذا وصف إرشادي وليس تأكيدًا لسيرفر حسابك.',
+      EU: 'أوروبا: راجع بلد الحساب وشروط البطاقات الإقليمية.',
+      US: 'أمريكا الشمالية: تأكد من تطابق منطقة أي بطاقة مع حسابك.',
+      OTHER: 'منطقة أخرى: اعتمد على إعدادات حسابك ومعلومات Garena الرسمية.'
+    };
+    $('regionGuidance').textContent = tr(notes[$('gameRegionSelect').value] || notes.OTHER);
+  }
+
   function makeIdempotencyKey() {
     if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
     return 'bd-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 14);
@@ -850,6 +876,15 @@
     setCategory(button.dataset.categoryJump);
     $('shop').scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' });
   }));
+
+  $('uidCheckButton').addEventListener('click', checkPlayerUid);
+  $('uidCheckInput').addEventListener('input', () => {
+    $('uidCheckResult').textContent = tr('اكتب من 6 إلى 16 رقمًا.');
+    $('uidCheckResult').dataset.status = '';
+    $('uidCheckInput').setAttribute('aria-invalid', 'false');
+  });
+  $('gameRegionSelect').addEventListener('change', updateGameRegionGuidance);
+  updateGameRegionGuidance();
 
   $('searchInput').addEventListener('input', event => { state.query = event.target.value.trim(); renderProducts(); });
   $('sortSelect').addEventListener('change', event => { state.sort = event.target.value; renderProducts(); });
