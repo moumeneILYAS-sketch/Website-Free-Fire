@@ -90,7 +90,8 @@
   function readLanguageMode() {
     try {
       const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-      return ['auto', 'ar', 'fr', 'en', 'de'].includes(saved) ? saved : 'auto';
+      // Migrate the old country-linked "auto" mode to a stable independent language.
+      return ['ar', 'fr', 'en', 'de'].includes(saved) ? saved : 'ar';
     } catch { return 'auto'; }
   }
 
@@ -102,10 +103,9 @@
     return map[countryCode] || 'en';
   }
 
+  // Language is a standalone preference; changing country/currency never changes it.
   function activeLanguage() {
-    return state.languageMode === 'auto'
-      ? languageForCountry(state.walletCountry)
-      : state.languageMode;
+    return state.languageMode;
   }
 
   state.languageMode = readLanguageMode();
@@ -123,7 +123,7 @@
   }
 
   function changeLanguageMode(mode) {
-    if (!['auto', 'ar', 'fr', 'en', 'de'].includes(mode)) return;
+    if (!['ar', 'fr', 'en', 'de'].includes(mode)) return;
     state.languageMode = mode;
     try { localStorage.setItem(LANGUAGE_STORAGE_KEY, mode); } catch { /* Keep the choice for this session. */ }
     applyLanguagePreference();
@@ -881,12 +881,10 @@
     if (!WALLET_COUNTRIES[country]) return;
     state.walletCountry = country;
     try { localStorage.setItem(WALLET_COUNTRY_STORAGE, country); } catch { /* Keep the choice for this page session. */ }
-    if (state.languageMode === 'auto') applyLanguagePreference();
-    else {
-      updateWalletCountryUI();
-      renderProducts();
-      renderCart();
-    }
+    // Country/currency changes are isolated from the language preference.
+    updateWalletCountryUI();
+    renderProducts();
+    renderCart();
   });
   $('walletDepositAmount').addEventListener('input', updateWalletDepositPreview);
   $('walletDepositButton').addEventListener('click', () => {
