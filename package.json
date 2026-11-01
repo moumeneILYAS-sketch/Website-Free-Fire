@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js && node --check app.js && node --check catalog.js && node --check i18n.js && node --check commission.js && node --check test/commission.test.js && node --check scripts/migrate.js && node --check admin/admin.js && node --check scripts/prepare-vercel.js && node --check lib/vercel-api.js && node --check lib/google-auth.js && node --check api/auth/google.js && node --check api/products.js && node --check api/health.js && node --check api/orders.js",
+    "check": "node --check server.js && node --check app.js && node --check catalog.js && node --check i18n.js && node --check commission.js && node --check test/commission.test.js && node --check scripts/migrate.js && node --check admin/admin.js && node --check scripts/prepare-vercel.js && node --check lib/vercel-api.js && node --check lib/google-auth.js && node --check api/auth/google.js && node --check api/products.js && node --check api/health.js && node --check api/orders.js && node --check api/supplier-status.js && node --check api/supplier-catalog.js && node --check lib/shop2topup.js",
     "test": "node --test",
     "vercel-build": "node scripts/prepare-vercel.js",
     "db:migrate": "node scripts/migrate.js"
