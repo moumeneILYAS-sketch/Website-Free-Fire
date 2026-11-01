@@ -64,6 +64,25 @@
     ["هل الطلبات والمنتجات متاحة فعليًا؟","Are orders and products actually available?","Les commandes et produits sont-ils réellement disponibles ?","Sind Bestellungen und Produkte tatsächlich verfügbar?"],
     ["لا. BlueDrop نموذج عرض فقط. لا يتم تحصيل الأموال أو تسليم الجواهر أو الأكواد أو العضويات من خلال الموقع.","No. BlueDrop is a demo only. It does not collect money or deliver diamonds, codes or memberships.","Non. BlueDrop est une démonstration. Aucun paiement ni livraison de diamants, codes ou abonnements n'est effectué.","Nein. BlueDrop ist nur eine Demo. Es werden weder Geld noch Diamanten, Codes oder Mitgliedschaften geliefert."]
   ]);
+
+  rows.push(...[
+    ["الشرق الأوسط","Middle East","Moyen-Orient","Naher Osten"],
+    ["أوروبا","Europe","Europe","Europa"],
+    ["أمريكا الشمالية","North America","Amérique du Nord","Nordamerika"],
+    ["منطقة أخرى","Other region","Autre région","Andere Region"],
+    ["الجزائر: تحقق من بلد حسابك والأسعار والتوفر عبر القنوات الرسمية.","Algeria: check your account country, prices and availability through official channels.","Algérie : vérifiez le pays de votre compte, les prix et la disponibilité via les canaux officiels.","Algerien: Prüfe Kontoland, Preise und Verfügbarkeit über offizielle Kanäle."],
+    ["المغرب: قد تختلف الباقات والأسعار ووسائل الدفع عن الجزائر.","Morocco: packs, prices and payment methods may differ from Algeria.","Maroc : les packs, prix et moyens de paiement peuvent différer de l'Algérie.","Marokko: Pakete, Preise und Zahlungsmethoden können sich von Algerien unterscheiden."],
+    ["تونس: راجع المنطقة والتوفر داخل اللعبة والقنوات الرسمية.","Tunisia: check your region and availability in-game and through official channels.","Tunisie : vérifiez la région et la disponibilité dans le jeu et via les canaux officiels.","Tunesien: Prüfe Region und Verfügbarkeit im Spiel und über offizielle Kanäle."],
+    ["مصر: تحقق من شروط المنطقة والأسعار قبل أي عملية.","Egypt: check regional terms and prices before any transaction.","Égypte : vérifiez les conditions régionales et les prix avant toute transaction.","Ägypten: Prüfe regionale Bedingungen und Preise vor jeder Transaktion."],
+    ["الشرق الأوسط: هذا وصف إرشادي وليس تأكيدًا لسيرفر حسابك.","Middle East: this is guidance, not confirmation of your account server.","Moyen-Orient : il s'agit d'un conseil, pas d'une confirmation du serveur de votre compte.","Naher Osten: Dies ist ein Hinweis, keine Bestätigung deines Kontoservers."],
+    ["أوروبا: راجع بلد الحساب وشروط البطاقات الإقليمية.","Europe: check your account country and regional card terms.","Europe : vérifiez le pays du compte et les conditions des cartes régionales.","Europa: Prüfe dein Kontoland und die Bedingungen für regionale Karten."],
+    ["أمريكا الشمالية: تأكد من تطابق منطقة أي بطاقة مع حسابك.","North America: make sure any card's region matches your account.","Amérique du Nord : assurez-vous que la région de toute carte correspond à votre compte.","Nordamerika: Stelle sicher, dass die Kartenregion mit deinem Konto übereinstimmt."],
+    ["منطقة أخرى: اعتمد على إعدادات حسابك ومعلومات Garena الرسمية.","Other region: rely on your account settings and official Garena information.","Autre région : fiez-vous aux paramètres de votre compte et aux informations officielles de Garena.","Andere Region: Verlasse dich auf deine Kontoeinstellungen und offizielle Garena-Informationen."],
+    ["الجواهر: تحقق من الباقة والسعر النهائي داخل PagoStore الرسمي.","Diamonds: check the pack and final price on the official PagoStore.","Diamants : vérifiez le pack et le prix final sur le PagoStore officiel.","Diamanten: Prüfe Paket und Endpreis im offiziellen PagoStore."],
+    ["العضويات: راجع المدة والمكافآت وتوفرها في منطقتك.","Memberships: review the duration, rewards and availability in your region.","Abonnements : vérifiez la durée, les récompenses et la disponibilité dans votre région.","Mitgliedschaften: Prüfe Laufzeit, Belohnungen und Verfügbarkeit in deiner Region."],
+    ["بطاقة الموسم: تحقق من الموسم الحالي ومحتواه داخل اللعبة.","Season pass: check the current season and its content in-game.","Pass saisonnier : vérifiez la saison actuelle et son contenu dans le jeu.","Saisonpass: Prüfe die aktuelle Saison und ihre Inhalte im Spiel."],
+    ["الأزياء والرقصات: قد يتغير توفرها حسب الفعاليات والتحديثات.","Outfits and emotes: availability may change with events and updates.","Tenues et emotes : leur disponibilité peut varier selon les événements et les mises à jour.","Outfits und Emotes: Die Verfügbarkeit kann sich mit Events und Updates ändern."]
+  ]);
   const locales = { ar: 'ar', fr: 'fr-FR', en: 'en-US', de: 'de-DE' };
   const dictionaries = { ar: Object.create(null), fr: Object.create(null), en: Object.create(null), de: Object.create(null) };
   rows.forEach(([source, en, fr, de]) => {
