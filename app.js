@@ -454,11 +454,9 @@
               ? `${escapeHtml(tr(product.priceNote))} • ${tr('يشمل عمولة خدمة')} ${productQuote.commissionPercent}%`
               : `${tr('يشمل عمولة خدمة')} ${productQuote.commissionPercent}%`
             : escapeHtml(tr(product.priceNote || 'للعرض فقط'));
-      const cartButton = isOfficialDiamondTopup
-        ? `<a class="add-button official-purchase-link" href="https://pagostore.garena.com/" target="_blank" rel="noopener noreferrer" aria-label="${tr('فتح قناة Garena الرسمية لشحن')} ${name}" title="${tr('افتح PagoStore الرسمي')}">↗</a>`
-        : product.purchasable === false
-          ? `<button class="add-button" type="button" disabled aria-label="${name} — ${tr('غير متاح للشراء')}" title="${tr('للعرض فقط')}">—</button>`
-          : `<button class="add-button" type="button" data-add="${id}" aria-label="${tr('إضافة')} ${name} ${tr('إلى السلة')}" title="${tr('أضف إلى السلة')}">+</button>`;
+      const cartButton = product.purchasable === false
+        ? `<button class="add-button" type="button" disabled aria-label="${name} — ${tr('غير متاح للشراء')}" title="${tr('للعرض فقط')}">—</button>`
+        : `<button class="add-button" type="button" data-add="${id}" aria-label="${tr('إضافة')} ${name} ${tr('إلى السلة')}" title="${tr('أضف إلى السلة')}">+</button>`;
       return `
         <article class="product-card stagger-${Math.min(index, 8)}">
           <div class="product-visual category-${escapeHtml(product.category)}">
@@ -621,8 +619,10 @@
           : tr(product.priceNote || 'للعرض فقط');
     const addButton = $('dialogAddToCart');
     const officialLink = $('dialogOfficialTopupLink');
-    officialLink.hidden = !isOfficialDiamondTopup;
-    addButton.hidden = isOfficialDiamondTopup;
+    // Keep every product's selection flow inside BlueDrop. The external official
+    // store remains a reference in the player guide, not a checkout redirect.
+    officialLink.hidden = true;
+    addButton.hidden = false;
     addButton.disabled = product.purchasable === false;
     addButton.textContent = tr(product.purchasable === false ? 'للعرض فقط — غير متاح للشراء' : 'أضف إلى السلة');
     $('dialogProductNote').textContent = tr(isOfficialDiamondTopup
