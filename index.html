@@ -237,8 +237,11 @@
             <p>أدخل المعرّف الرقمي للاعب للتحقق من تنسيقه فقط. لا نتصل بخوادم Garena ولا نتحقق من وجود الحساب.</p>
             <label for="uidCheckInput">معرّف اللاعب (UID)</label>
             <input id="uidCheckInput" type="text" inputmode="numeric" autocomplete="off" maxlength="16" placeholder="مثال: 123456789">
+            <label for="uidPlayerNameInput">اسم الحساب داخل اللعبة (اختياري)</label>
+            <input id="uidPlayerNameInput" type="text" autocomplete="off" maxlength="32" placeholder="اكتب اسم اللاعب كما يظهر في اللعبة">
             <button class="button button-primary" id="uidCheckButton" type="button">تحقق من التنسيق</button>
             <p class="uid-check-result" id="uidCheckResult" role="status" aria-live="polite">اكتب من 6 إلى 16 رقمًا.</p>
+            <small>اسم الحساب الذي تكتبه هنا للعرض فقط، ولا يتم جلبه أو تأكيده من Garena.</small>
             <small>لا تدخل كلمة المرور أو رمز التحقق مطلقًا.</small>
           </article>
           <article class="player-tool-card reveal reveal-delay-1">
