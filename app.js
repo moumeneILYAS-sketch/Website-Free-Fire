@@ -777,12 +777,19 @@
 
   function checkPlayerUid() {
     const input = $('uidCheckInput');
+    const nameInput = $('uidPlayerNameInput');
     const result = $('uidCheckResult');
     const value = input.value.trim();
+    const playerName = nameInput.value.trim().replace(/\\s+/g, ' ');
     const valid = /^[0-9]{6,16}$/.test(value);
-    result.textContent = valid
-      ? tr('تنسيق UID صحيح مبدئيًا. لم يتم التحقق من الحساب لدى Garena.')
-      : tr('تنسيق غير صحيح: استخدم من 6 إلى 16 رقمًا فقط.');
+    if (valid) {
+      const nameNote = playerName
+        ? ` ${tr('اسم الحساب المدخل')}: ${playerName}.`
+        : '';
+      result.textContent = `${tr('تنسيق UID صحيح مبدئيًا. لم يتم التحقق من الحساب لدى Garena.')}${nameNote}`;
+    } else {
+      result.textContent = tr('تنسيق غير صحيح: استخدم من 6 إلى 16 رقمًا فقط.');
+    }
     result.dataset.status = valid ? 'valid' : 'invalid';
     input.setAttribute('aria-invalid', String(Boolean(value) && !valid));
   }
@@ -881,6 +888,9 @@
     $('uidCheckResult').textContent = tr('اكتب من 6 إلى 16 رقمًا.');
     $('uidCheckResult').dataset.status = '';
     $('uidCheckInput').setAttribute('aria-invalid', 'false');
+  });
+  $('uidPlayerNameInput').addEventListener('input', () => {
+    if ($('uidCheckResult').dataset.status === 'valid') checkPlayerUid();
   });
   $('gameRegionSelect').addEventListener('change', updateGameRegionGuidance);
   updateGameRegionGuidance();
